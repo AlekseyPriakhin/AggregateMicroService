@@ -7,11 +7,11 @@ public class Participiant: Aggregate<ParticipiantId> {
   public ParticipiantStatus Status { get; private set; } 
   public Progress Progress { get; private set; } 
 
-  public static Participiant Create(ParticipiantId id, ParticipiantStatus status, Progress progress) {
+  public static Participiant Create(ParticipiantId id, ParticipiantStatus status) {
     return new() {
       Id = id,
       Status = status,
-      Progress = progress
+      Progress = Progress.Of(0)
     };
   }
 

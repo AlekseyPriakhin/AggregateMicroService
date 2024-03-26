@@ -41,14 +41,24 @@ public class Material : Aggregate<MaterialId> {
   }
 
   public void ChangeMaterialStatus(MaterialStatus status) {
+
     
   }
 
-  public Participiant Begin(Guid userId) {
-    var participiant = Participiant.Create(ParticipiantId.Of(Id.Value, userId), ParticipiantStatus.Of(ParticipiantStatuses.InProggess),
-    Progress.Of(0));
-    return participiant;
-  }
+  public Participiant Begin(Guid userId) => Participiant.Create(
+    ParticipiantId.Of(Id.Value, userId), 
+    ParticipiantStatus.Of(ParticipiantStatuses.InProggess)
+  );
+
+   public Participiant BeginV2(Guid userId) {
+
+
+    return Participiant.Create(
+    ParticipiantId.Of(Id.Value, userId), 
+    ParticipiantStatus.Of(ParticipiantStatuses.InProggess)
+    );
+   }
+  
 
   public void UpdateProgress(Participiant participiant, int progress) {
     if(INSTANT_COMPLETABLE.Any(e => e.Equals(Type))) {
@@ -66,14 +76,30 @@ public class Material : Aggregate<MaterialId> {
       participiant.Complete();
   }
 
-  public void ChangeDuration(Duration duration, List<Participiant> participiants) {
+  public void ChangeDuration(Duration duration, IEnumerable<Participiant> participiants) {
+    // TODO Вынести в сервис
     foreach (var item in participiants)
     {
       if(item.Status.Equals(ParticipiantStatus.Of(ParticipiantStatuses.Completed))) continue;
 
       if(item.Progress.Value > 0) {
-        var currentProggres = item.Progress.Value; //85%
-        var c = Duration.Value.Minutes; // 160%
+        var currentProggres = item.Progress.Value; 
+        var currentDuration = Duration.Value.Minutes; 
+
+        var currentProggresInMinutes = currentDuration / 100 * currentProggres;
+        var newProgress = currentProggresInMinutes / duration.Value.Minutes * 100;
+
+        item.UpdateProgress(newProgress);
+
+        if(newProgress > MIN_COMPLETE_PROGRESS && item.Status.Equals(ParticipiantStatus.Of(ParticipiantStatuses.InProggess)))
+        {
+          item.Complete();
+          continue;
+        }
+
+        if(newProgress < MIN_COMPLETE_PROGRESS && item.Status.Equals(ParticipiantStatus.Of(ParticipiantStatuses.Completed))) {
+          item.UpdateProgress(MIN_COMPLETE_PROGRESS);
+        }
        
       }
   
