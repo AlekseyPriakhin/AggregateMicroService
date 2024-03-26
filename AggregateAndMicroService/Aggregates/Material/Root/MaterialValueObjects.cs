@@ -2,16 +2,20 @@ using AggregateAndMicroService.Common;
 
 namespace AggregateAndMicroService.Aggregates.Material;
 
-public class MaterialId {
+public class MaterialId
+{
 
   public Guid Value { get; }
 
-  private MaterialId(Guid value) {
+  private MaterialId(Guid value)
+  {
     Value = value;
   }
 
-  public static MaterialId Of(Guid guid) {
-    if(guid == Guid.Empty) {
+  public static MaterialId Of(Guid guid)
+  {
+    if (guid == Guid.Empty)
+    {
       throw new ArgumentException("Invalid Id");
     }
 
@@ -21,18 +25,21 @@ public class MaterialId {
   public static implicit operator Guid(MaterialId id) => id.Value;
 }
 
-public enum MaterialTypes {
+public enum MaterialTypes
+{
   Document = 0,
   Webinar = 1,
   Course = 2,
   Presentation = 3
 }
 
-public class MaterialType : ValueObject {
+public class MaterialType : ValueObject
+{
 
   public MaterialTypes Value { get; }
 
-  private MaterialType(MaterialTypes value) {
+  private MaterialType(MaterialTypes value)
+  {
     Value = value;
   }
 
@@ -40,24 +47,27 @@ public class MaterialType : ValueObject {
 
   protected override IEnumerable<object> GetEqualityComponents()
   {
-      yield return Value;
+    yield return Value;
   }
 
 }
 
-public enum Statuses {
+public enum Statuses
+{
   Active = 0,
   Draft = 1,
   Archived = 2
 }
 
-public class MaterialStatus : ValueObject {
+public class MaterialStatus : ValueObject
+{
 
   public Statuses Value { get; }
 
-  private MaterialStatus(Statuses value) {
+  private MaterialStatus(Statuses value)
+  {
     Value = value;
-  } 
+  }
   public static MaterialStatus Of(Statuses status) => new(status);
 
   /* public override bool Equals(object? obj)
@@ -67,19 +77,25 @@ public class MaterialStatus : ValueObject {
 
   protected override IEnumerable<object> GetEqualityComponents()
   {
-      yield return Value;
+    yield return Value;
   }
 }
 
-public class Duration : ValueObject {
+public class Duration : ValueObject
+{
   public TimeSpan Value { get; }
-  private Duration(TimeSpan? value) {
+
+  public Duration() { Value = TimeSpan.Zero; }
+
+  private Duration(TimeSpan? value)
+  {
     Value = value is null ? TimeSpan.Zero : value.Value;
   }
 
   public static Duration Of(TimeSpan duration) => new(duration);
 
-  protected override IEnumerable<object> GetEqualityComponents() {
+  protected override IEnumerable<object> GetEqualityComponents()
+  {
     yield return Value;
   }
 }

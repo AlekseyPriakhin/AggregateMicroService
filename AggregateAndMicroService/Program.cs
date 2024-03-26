@@ -1,4 +1,5 @@
 using AggregateAndMicroService.Aggregates.Material;
+using AggregateAndMicroService.Aggregates.User;
 using AggregateAndMicroService.Contracts;
 using AggregateAndMicroService.Services;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IMaterialService, MaterialService>();
+
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+{
+    //var connectionString = builder.Configuration["dbConnectionString"] ?? throw new Exception("Строка подключения отсутсвует");
+    options.UseNpgsql("host=localhost;port=5432;database=modelstore;username=postgres;password=postgres");
+});
 
 var app = builder.Build();
 
@@ -27,14 +35,14 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-var material = Material.Create(MaterialId.Of(Guid.NewGuid()), 
+var material = Material.Create(MaterialId.Of(Guid.NewGuid()),
 MaterialType.Of(MaterialTypes.Webinar),
- MaterialStatus.Of(Statuses.Active), 
+ MaterialStatus.Of(Statuses.Active),
  "Material Title", "Material Description", Duration.Of(TimeSpan.FromHours(2)));
 
 app.MapGet("/weatherforecast", (IMaterialService service) =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
+    var forecast = Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
         (
             DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
@@ -52,4 +60,104 @@ app.Run();
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+}
+
+
+public class AppDbContext : DbContext
+{
+    public DbSet<Material> Material { get; set; }
+
+    public DbSet<User> Users { get; set; }
+
+    public DbSet<Participiant> Participiants { get; set; }
+
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    {
+        Database.EnsureCreated();
+    }
+
+    public AppDbContext()
+    {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<User>().HasKey(e => e.Id);
+
+        modelBuilder.Entity<User>().Property(e => e.Id).ValueGeneratedNever()
+        .HasConversion(id => id.Value, dbId => UserId.Of(dbId));
+
+
+        modelBuilder.Entity<Material>().HasKey(p => p.Id);
+
+        modelBuilder.Entity<Material>().ToTable(nameof(Material));
+
+        //modelBuilder.Entity<Material>().HasKey(r => r.Id);
+        modelBuilder.Entity<Material>().Property(r => r.Id).ValueGeneratedNever()
+            .HasConversion<Guid>(materialId => materialId.Value, dbId => MaterialId.Of(dbId));
+
+        modelBuilder.Entity<Material>().OwnsOne(
+            x => x.Status,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName("Status")
+                    .IsRequired();
+            }
+        );
+
+        modelBuilder.Entity<Material>().OwnsOne(
+            x => x.Type,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName("Type")
+                    .IsRequired();
+            }
+        );
+
+        modelBuilder.Entity<Material>().OwnsOne(
+            x => x.Duration,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName("Duration")
+                    .IsRequired();
+            }
+        );
+
+        modelBuilder.Entity<Participiant>().HasKey(e => new { e.Id.MaterialId, e.Id.UserId });
+
+
+        modelBuilder.Entity<Participiant>().OwnsOne(
+            x => x.Status,
+            e =>
+            {
+                e.Property(p => p.Value)
+                    .HasColumnName("Status")
+                    .IsRequired();
+            }
+        );
+
+        modelBuilder.Entity<Participiant>().OwnsOne(
+            x => x.Progress,
+            e =>
+            {
+                e.Property(p => p.Value)
+                    .HasColumnName("Progress");
+            }
+        );
+
+        modelBuilder.Entity<Participiant>().HasOne(e => e.Material)
+        .WithMany(e => e.Participiants)
+        .HasForeignKey(e => e.MaterialId);
+
+        modelBuilder.Entity<Participiant>().HasOne(e => e.User)
+        .WithMany(e => e.Participiants)
+        .HasForeignKey(e => e.UserId);
+
+
+    }
 }
