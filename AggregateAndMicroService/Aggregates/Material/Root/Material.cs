@@ -24,9 +24,10 @@ public class Material : Aggregate<MaterialId> {
       throw new CreateWithArchivedStatusException();
     }
 
-    if(type.Equals(MaterialType.Of(MaterialTypes.Webinar))) {
+    // TODO Переделать ошибку
+    /* if(type.Equals(MaterialType.Of(MaterialTypes.Webinar))) {
       throw new DurationRequiredException(type.Value.ToString());
-    }
+    } */
 
     var material = new Material {
       Id = id,
