@@ -1,4 +1,6 @@
 using AggregateAndMicroService.Aggregates.Material;
+using AggregateAndMicroService.Contracts;
+using AggregateAndMicroService.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IMaterialService, MaterialService>();
 
 var app = builder.Build();
 
@@ -29,7 +32,7 @@ MaterialType.Of(MaterialTypes.Webinar),
  MaterialStatus.Of(Statuses.Active), 
  "Material Title", "Material Description", Duration.Of(TimeSpan.FromHours(2)));
 
-app.MapGet("/weatherforecast", () =>
+app.MapGet("/weatherforecast", (IMaterialService service) =>
 {
     var forecast =  Enumerable.Range(1, 5).Select(index =>
         new WeatherForecast
