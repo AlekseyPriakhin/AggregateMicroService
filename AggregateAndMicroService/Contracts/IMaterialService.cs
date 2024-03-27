@@ -1,4 +1,4 @@
 namespace AggregateAndMicroService.Contracts;
 public interface IMaterialService {
-  public void ChangeDuration(Guid id, TimeSpan duration);
+  public Task<bool> ChangeDuration(Guid id, TimeSpan duration);
 }

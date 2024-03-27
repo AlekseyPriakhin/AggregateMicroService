@@ -16,7 +16,7 @@ public class MaterialId
   {
     if (guid == Guid.Empty)
     {
-      throw new ArgumentException("Invalid Id");
+      throw new ArgumentException($"Invalid Id - {guid}");
     }
 
     return new(guid);
@@ -43,7 +43,9 @@ public class MaterialType : ValueObject
     Value = value;
   }
 
-  public static MaterialType Of(MaterialTypes materials) => new(materials);
+  public static MaterialType Of(MaterialTypes materials) {
+    return new MaterialType(materials);
+  }
 
   protected override IEnumerable<object> GetEqualityComponents()
   {

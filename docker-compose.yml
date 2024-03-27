@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   app:
-    container_name: back
+    container_name: microservice_back
     build:
       context: ./AggregateAndMicroService
       dockerfile: Dockerfile
@@ -15,7 +15,7 @@ services:
     image: postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: 12345678
       POSTGRES_DB: materials
     ports:
       - 5432:5432

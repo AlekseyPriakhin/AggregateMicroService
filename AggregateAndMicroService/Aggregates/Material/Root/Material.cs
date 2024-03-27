@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using AggregateAndMicroService.Aggregates.User;
 using AggregateAndMicroService.Common;
 using Microsoft.Net.Http.Headers;
 
@@ -7,8 +10,8 @@ namespace AggregateAndMicroService.Aggregates.Material;
 public class Material : Aggregate<MaterialId>
 {
 
-  private const int MIN_COMPLETE_PROGRESS = 90;
-  private readonly MaterialType[] INSTANT_COMPLETABLE = [
+  public const int MIN_COMPLETE_PROGRESS = 90;
+  public static readonly MaterialType[] INSTANT_COMPLETABLE = [
     MaterialType.Of(MaterialTypes.Document),
     MaterialType.Of(MaterialTypes.Presentation)
   ];
@@ -17,10 +20,17 @@ public class Material : Aggregate<MaterialId>
   public MaterialStatus Status { get; private set; }
   public string Title { get; private set; }
   public string Description { get; private set; }
-  public Duration Duration { get; private set; }
-  public virtual ICollection<Participiant> Participiants { get; set; }
+  public Duration? Duration { get; private set; }
 
-  public static Material Create(MaterialId id, MaterialType type, MaterialStatus status, string title, string description, Duration duration)
+
+  [NotMapped]
+  public bool IsInstantCompletable { get { return INSTANT_COMPLETABLE.Any(e => e.Equals(Type)); } }
+
+  //Navigation properties
+  [JsonIgnore]
+  public virtual ICollection<Participiant> Participiants { get; private set; }
+
+  public static Material Create(MaterialId id, MaterialType type, MaterialStatus status, string title, string description, Duration duration = null)
   {
 
     if (status.Equals(MaterialStatus.Of(Statuses.Archived)))
@@ -39,7 +49,7 @@ public class Material : Aggregate<MaterialId>
       Type = type,
       Status = status,
       Title = title,
-      Duration = duration,
+      Duration = duration ?? Duration.Of(TimeSpan.Zero),
       Description = description
     };
 
@@ -53,24 +63,15 @@ public class Material : Aggregate<MaterialId>
   }
 
   public Participiant Begin(Guid userId) => Participiant.Create(
-    ParticipiantId.Of(Id.Value, userId),
+    Id,
+    UserId.Of(userId),
     ParticipiantStatus.Of(ParticipiantStatuses.InProggess)
   );
-
-  public Participiant BeginV2(Guid userId)
-  {
-
-
-    return Participiant.Create(
-    ParticipiantId.Of(Id.Value, userId),
-    ParticipiantStatus.Of(ParticipiantStatuses.InProggess)
-    );
-  }
 
 
   public void UpdateProgress(Participiant participiant, int progress)
   {
-    if (INSTANT_COMPLETABLE.Any(e => e.Equals(Type)))
+    if (IsInstantCompletable)
     {
       participiant.UpdateProgress(100);
       participiant.Complete();
@@ -88,13 +89,14 @@ public class Material : Aggregate<MaterialId>
 
   public void ChangeDuration(Duration duration, IEnumerable<Participiant> participiants)
   {
-    // TODO Вынести в сервис
+    /* // TODO Вынести в сервис
     foreach (var item in participiants)
     {
       if (item.Status.Equals(ParticipiantStatus.Of(ParticipiantStatuses.Completed))) continue;
 
-      if (item.Progress.Value > 0)
+      if (item.Progress.Value > 0 && IsInstantCompletable)
       {
+        if(Duration is null) throw new DurationRequiredException(Type.Value.ToString()); 
         var currentProggres = item.Progress.Value;
         var currentDuration = Duration.Value.Minutes;
 
@@ -116,7 +118,7 @@ public class Material : Aggregate<MaterialId>
 
       }
 
-    }
+    } */
     Duration = duration;
   }
 
