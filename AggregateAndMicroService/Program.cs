@@ -1,4 +1,4 @@
-using AggregateAndMicroService.Aggregates.Material;
+using AggregateAndMicroService.Aggregates.Course;
 using AggregateAndMicroService.Aggregates.User;
 using AggregateAndMicroService.Contracts;
 using AggregateAndMicroService.Services;
@@ -35,9 +35,9 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-var material = Material.Create(MaterialId.Of(Guid.NewGuid()),
-MaterialType.Of(MaterialTypes.Webinar),
- MaterialStatus.Of(Statuses.Active),
+var material = Course.Create(CourseId.Of(Guid.NewGuid()),
+StageType.Of(StageTypes.Webinar),
+ CourseStatus.Of(Statuses.Active),
  "Material Title", "Material Description", Duration.Of(TimeSpan.FromHours(2)));
 
 app.MapGet("/weatherforecast", (IMaterialService service) =>
@@ -65,11 +65,11 @@ record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 
 public class AppDbContext : DbContext
 {
-    public DbSet<Material> Material { get; set; }
+    public DbSet<Course> Material { get; set; }
 
     public DbSet<User> Users { get; set; }
 
-    public DbSet<Participiant> Participiants { get; set; }
+    public DbSet<CourseCompleting> CourseCompleting { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
@@ -90,15 +90,15 @@ public class AppDbContext : DbContext
         .HasConversion(id => id.Value, dbId => UserId.Of(dbId));
 
 
-        modelBuilder.Entity<Material>().HasKey(p => p.Id);
+        modelBuilder.Entity<Course>().HasKey(p => p.Id);
 
-        modelBuilder.Entity<Material>().ToTable(nameof(Material));
+        modelBuilder.Entity<Course>().ToTable(nameof(Material));
 
         //modelBuilder.Entity<Material>().HasKey(r => r.Id);
-        modelBuilder.Entity<Material>().Property(r => r.Id).ValueGeneratedNever()
-            .HasConversion<Guid>(materialId => materialId.Value, dbId => MaterialId.Of(dbId));
+        modelBuilder.Entity<Course>().Property(r => r.Id).ValueGeneratedNever()
+            .HasConversion<Guid>(materialId => materialId.Value, dbId => CourseId.Of(dbId));
 
-        modelBuilder.Entity<Material>().OwnsOne(
+        modelBuilder.Entity<Course>().OwnsOne(
             x => x.Status,
             a =>
             {
@@ -108,17 +108,17 @@ public class AppDbContext : DbContext
             }
         );
 
-        modelBuilder.Entity<Material>().OwnsOne(
-            x => x.Type,
-            a =>
-            {
-                a.Property(p => p.Value)
-                    .HasColumnName("Type")
-                    .IsRequired();
-            }
-        );
-
-        modelBuilder.Entity<Material>().OwnsOne(
+        /*  modelBuilder.Entity<Course>().OwnsOne(
+             x => x.,
+             a =>
+             {
+                 a.Property(p => p.Value)
+                     .HasColumnName("Type")
+                     .IsRequired();
+             }
+         );
+  */
+        /* modelBuilder.Entity<Course>().OwnsOne(
             x => x.Duration,
             a =>
             {
@@ -126,7 +126,7 @@ public class AppDbContext : DbContext
                     .HasColumnName("Duration")
                     .IsRequired();
             }
-        );
+        ); */
 
         modelBuilder.Entity<Participiant>().HasKey(e => new { e.Id.MaterialId, e.Id.UserId });
 

@@ -1,4 +1,4 @@
-using AggregateAndMicroService.Aggregates.Material;
+using AggregateAndMicroService.Aggregates.Course;
 using AggregateAndMicroService.Common;
 
 namespace AggregateAndMicroService.Aggregates.User;
