@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using AggregateAndMicroService.Aggregates.Course;
 using AggregateAndMicroService.Aggregates.User;
 using AggregateAndMicroService.Contracts;
@@ -8,15 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+if (File.Exists("./config.json")) builder.Configuration.AddJsonFile("./config.json");
+else throw new Exception("Файл конфигурации config.json отсутсвует!");
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddScoped<IMaterialService, MaterialService>();
 
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    //var connectionString = builder.Configuration["dbConnectionString"] ?? throw new Exception("Строка подключения отсутсвует");
-    options.UseNpgsql("host=localhost;port=5432;database=modelstore;username=postgres;password=postgres");
+    var connectionString = builder.Configuration["dbConnectionString"] ?? throw new Exception("Строка подключения отсутсвует");
+    options.UseNpgsql(connectionString);
 });
 
 var app = builder.Build();
@@ -30,36 +36,54 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/materials", async (AppDbContext context) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var items = await context.Material.Take(10).ToListAsync();
 
-var material = Course.Create(CourseId.Of(Guid.NewGuid()),
-StageType.Of(StageTypes.Webinar),
- CourseStatus.Of(Statuses.Active),
- "Material Title", "Material Description", Duration.Of(TimeSpan.FromHours(2)));
+    return Results.Ok(items);
+});
 
-app.MapGet("/weatherforecast", (IMaterialService service) =>
+app.MapPost("/materials", async (AppDbContext context) =>
 {
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+    var material = Course.Create(CourseId.Of(Guid.NewGuid()),
+        StageType.Of(StageTypes.Webinar),
+        CourseStatus.Of(Statuses.Draft),
+        "Webinar title", "Webinar description", Duration.Of(TimeSpan.FromMinutes(120)));
+
+    context.Material.Add(material);
+    await context.SaveChangesAsync();
 })
+
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
+SeedData(app);
+
 app.Run();
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+
+void SeedData(IHost app)
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    using var scope = app.Services.CreateScope();
+    using var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.EnsureCreated();
+    if (!context.Material.Any())
+    {
+        var material = Material.Create(MaterialId.Of(Guid.NewGuid()),
+        MaterialType.Of(MaterialTypes.Document),
+        MaterialStatus.Of(Statuses.Active),
+        "Document title", "Document description");
+
+
+        var webinar = Material.Create(MaterialId.Of(Guid.NewGuid()),
+        MaterialType.Of(MaterialTypes.Webinar),
+        MaterialStatus.Of(Statuses.Draft),
+        "Webinar title", "Webinar description", Duration.Of(TimeSpan.FromMinutes(120)));
+
+        context.Material.Add(material);
+        context.Material.Add(webinar);
+    }
+    context.SaveChanges();
 }
 
 
@@ -73,7 +97,7 @@ public class AppDbContext : DbContext
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        Database.EnsureCreated();
+        //Database.EnsureCreated();
     }
 
     public AppDbContext()
@@ -113,6 +137,7 @@ public class AppDbContext : DbContext
              a =>
              {
                  a.Property(p => p.Value)
+                    .HasConversion(type => type, type => type)
                      .HasColumnName("Type")
                      .IsRequired();
              }
@@ -123,12 +148,11 @@ public class AppDbContext : DbContext
             a =>
             {
                 a.Property(p => p.Value)
-                    .HasColumnName("Duration")
-                    .IsRequired();
+                    .HasColumnName("Duration");
             }
         ); */
 
-        modelBuilder.Entity<Participiant>().HasKey(e => new { e.Id.MaterialId, e.Id.UserId });
+        modelBuilder.Entity<Participiant>().HasKey(e => new { e.MaterialId, e.UserId });
 
 
         modelBuilder.Entity<Participiant>().OwnsOne(

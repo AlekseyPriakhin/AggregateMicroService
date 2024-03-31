@@ -1,3 +1,8 @@
 {
   "dbConnectionString": "host=localhost;port=5432;database=modelstore;username=postgres;password=12345678"
 }
+
+// Docker 
+{ 
+   "dbConnectionString": "host=database;port=5432;database=modelstore;username=postgres;password=12345678"
+}
