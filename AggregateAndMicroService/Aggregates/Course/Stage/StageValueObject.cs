@@ -26,7 +26,7 @@ public enum StageTypes
 {
     Document = 0,
     Webinar = 1,
-    Course = 2,
+    Test = 2,
     Presentation = 3
 }
 

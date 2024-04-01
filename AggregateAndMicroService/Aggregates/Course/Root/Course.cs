@@ -1,3 +1,4 @@
+using AggregateAndMicroService.Aggregates.Course;
 using AggregateAndMicroService.Aggregates.User;
 using AggregateAndMicroService.Common;
 using Microsoft.Net.Http.Headers;
@@ -15,6 +16,8 @@ public class Course : Aggregate<CourseId>
   // navigation properties
   public virtual ICollection<CourseCompleting> Completings { get; private set; }
 
+  public virtual ICollection<Stage> Stages { get; private set; }
+
   public static Course Create(CourseId id, CourseStatus status, string title, string description = "")
   {
 
@@ -23,10 +26,6 @@ public class Course : Aggregate<CourseId>
       throw new CreateWithArchivedStatusException();
     }
 
-    // TODO Переделать ошибку
-    /* if(type.Equals(MaterialType.Of(MaterialTypes.Webinar))) {
-      throw new DurationRequiredException(type.Value.ToString());
-    } */
 
     var material = new Course
     {
@@ -39,35 +38,27 @@ public class Course : Aggregate<CourseId>
     return material;
   }
 
+  public void UpdateStatus(CourseStatus status) => Status = status;
 
-  public CourseCompleting Begin(CourseCompletingId id, UserId userId, CourseId courseId) => CourseCompleting.Create(id, userId, courseId);
-
-
-  public void UpdateProgress(Stage stage, CourseCompleting courseCompleting, Progress newProgress)
+  public void UpdateStageProgress(UpdateStageParams updateStageParams) 
   {
+    if(Status.Equals(CourseStatus.Of(Statuses.Draft)) || Status.Equals(CourseStatus.Of(Statuses.Archived)))
+      throw new Exception("Course is not active");
+    
+    if(updateStageParams.CourseCompleting.Status.Equals(CompleteStatus.Of(CompleteStatutes.Completed))) 
+      throw new Exception("Course already completed");
 
-  }
-
-  private void UpdateStatus(CourseStatus status) => Status = status;
-
-
-
-  public void UpdateProgress(CourseCompleting participiant, int progress)
-  {
-    /* if (INSTANT_COMPLETABLE.Any(e => e.Equals(Type)))
-    {
-      participiant.UpdateProgress(100);
-      participiant.Complete();
-      return;
-    }
-
-    var currentProggres = participiant.Progress.Value;
-    var newProgress = progress + currentProggres > 100 ? 100 : progress + currentProggres;
-
-    participiant.UpdateProgress(newProgress);
-
-    if (newProgress > MIN_COMPLETE_PROGRESS && participiant.Status.Equals(ParticipiantStatus.Of(ParticipiantStatuses.InProggess)))
-      participiant.Complete(); */
+    updateStageParams.StageCourseCompleting.UpdateProgress(
+      updateStageParams.Stage,
+      updateStageParams.StageProgress,
+      updateStageParams.CourseCompleting);
   }
 
 }
+  public record UpdateStageParams {
+    public Stage Stage { get; init; }
+    public CourseCompleting CourseCompleting { get; init; }
+
+    public StageCourseCompleting StageCourseCompleting { get; init; }
+    public StageProgress StageProgress { get; init; }
+  } 

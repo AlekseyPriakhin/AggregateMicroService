@@ -45,12 +45,7 @@ app.MapGet("/materials", async (AppDbContext context) =>
 
 app.MapPost("/materials", async (AppDbContext context) =>
 {
-    var material = Course.Create(CourseId.Of(Guid.NewGuid()),
-        StageType.Of(StageTypes.Webinar),
-        CourseStatus.Of(Statuses.Draft),
-        "Webinar title", "Webinar description", Duration.Of(TimeSpan.FromMinutes(120)));
 
-    context.Material.Add(material);
     await context.SaveChangesAsync();
 })
 
@@ -69,19 +64,7 @@ void SeedData(IHost app)
     context.Database.EnsureCreated();
     if (!context.Material.Any())
     {
-        var material = Material.Create(MaterialId.Of(Guid.NewGuid()),
-        MaterialType.Of(MaterialTypes.Document),
-        MaterialStatus.Of(Statuses.Active),
-        "Document title", "Document description");
 
-
-        var webinar = Material.Create(MaterialId.Of(Guid.NewGuid()),
-        MaterialType.Of(MaterialTypes.Webinar),
-        MaterialStatus.Of(Statuses.Draft),
-        "Webinar title", "Webinar description", Duration.Of(TimeSpan.FromMinutes(120)));
-
-        context.Material.Add(material);
-        context.Material.Add(webinar);
     }
     context.SaveChanges();
 }
@@ -120,7 +103,7 @@ public class AppDbContext : DbContext
 
         //modelBuilder.Entity<Material>().HasKey(r => r.Id);
         modelBuilder.Entity<Course>().Property(r => r.Id).ValueGeneratedNever()
-            .HasConversion<Guid>(materialId => materialId.Value, dbId => CourseId.Of(dbId));
+            .HasConversion(materialId => materialId.Value, dbId => CourseId.Of(dbId));
 
         modelBuilder.Entity<Course>().OwnsOne(
             x => x.Status,
@@ -132,56 +115,111 @@ public class AppDbContext : DbContext
             }
         );
 
-        /*  modelBuilder.Entity<Course>().OwnsOne(
-             x => x.,
-             a =>
-             {
-                 a.Property(p => p.Value)
-                    .HasConversion(type => type, type => type)
-                     .HasColumnName("Type")
-                     .IsRequired();
-             }
-         );
-  */
-        /* modelBuilder.Entity<Course>().OwnsOne(
-            x => x.Duration,
+        modelBuilder.Entity<Course>().OwnsOne(
+            x => x.StageCount,
+            a => {
+                a.Property(p => p.Value)
+                    .HasColumnName("StageCount")
+                    .HasDefaultValue(0);
+            }
+        );
+
+        modelBuilder.Entity<Stage>().HasKey(e => e.Id);
+
+        modelBuilder.Entity<Stage>().Property(e => e.Id).ValueGeneratedNever()
+        .HasConversion(id => id.Value, dbId => StageId.Of(dbId));
+
+        modelBuilder.Entity<Stage>().OwnsOne(
+            x => x.Type,
             a =>
             {
                 a.Property(p => p.Value)
-                    .HasColumnName("Duration");
-            }
-        ); */
-
-        modelBuilder.Entity<Participiant>().HasKey(e => new { e.MaterialId, e.UserId });
-
-
-        modelBuilder.Entity<Participiant>().OwnsOne(
-            x => x.Status,
-            e =>
-            {
-                e.Property(p => p.Value)
-                    .HasColumnName("Status")
+                    .HasColumnName("Type")
                     .IsRequired();
             }
         );
 
-        modelBuilder.Entity<Participiant>().OwnsOne(
-            x => x.Progress,
-            e =>
+        modelBuilder.Entity<Stage>().OwnsOne(
+            x => x.Duration,
+            a =>
             {
-                e.Property(p => p.Value)
-                    .HasColumnName("Progress");
+                a.Property(p => p.Value)
+                    .HasColumnName("Duration")
+                    .IsRequired();
             }
         );
 
-        modelBuilder.Entity<Participiant>().HasOne(e => e.Material)
-        .WithMany(e => e.Participiants)
-        .HasForeignKey(e => e.MaterialId);
+        modelBuilder.Entity<Stage>().HasOne(e => e.Course)
+            .WithMany(e => e.Stages)
+            .HasForeignKey(e => e.CourseId);
 
-        modelBuilder.Entity<Participiant>().HasOne(e => e.User)
-        .WithMany(e => e.Participiants)
-        .HasForeignKey(e => e.UserId);
+
+        modelBuilder.Entity<CourseCompleting>().HasKey(e => e.Id);
+
+        modelBuilder.Entity<CourseCompleting>().Property(e => e.Id).ValueGeneratedNever()
+        .HasConversion(id => id.Value, dbId => CourseCompletingId.Of(dbId));
+
+
+        modelBuilder.Entity<CourseCompleting>().OwnsOne(
+            x => x.Status,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName("Status")
+                    .IsRequired();
+            });
+
+        modelBuilder.Entity<CourseCompleting>().OwnsOne(
+            x => x.Progress,
+            a =>
+            {
+                a.Property(p => p.Value)
+                    .HasColumnName("Progress")
+                    .HasDefaultValue(0);
+            });
+        
+        modelBuilder.Entity<CourseCompleting>().OwnsOne(
+            x => x.StagesCountData,
+            a => {
+                a.Property(p => p.TotalStages)
+                    .HasColumnName("TotalStages")
+                    .HasDefaultValue(0);
+
+                a.Property(p => p.CompletedStages)
+                    .HasColumnName("CompletedStages")
+                    .HasDefaultValue(0);
+            }
+        );
+        
+        modelBuilder.Entity<CourseCompleting>().HasOne(e => e.User)
+            .WithMany(e => e.CourseCompletings)
+            .HasForeignKey(e => e.UserId);
+
+        modelBuilder.Entity<CourseCompleting>().HasOne(e => e.Course)
+            .WithMany(e => e.Completings)
+            .HasForeignKey(e => e.CourseId);
+    
+        modelBuilder.Entity<StageCourseCompleting>().HasKey(e => new { e.CourseCompletingId, e.StageId });
+
+        modelBuilder.Entity<StageCourseCompleting>().OwnsOne(
+            x => x.StageProgress,
+            a => {
+                a.Property(e => e.Value)
+                    .HasColumnName("StageProgress")
+                    .HasDefaultValue(0);
+            }
+        );
+
+        modelBuilder.Entity<StageCourseCompleting>().HasOne(e => e.Stage)
+            .WithMany(e => e.StageCourseCompletings)
+            .HasForeignKey(e => e.StageId);
+
+        modelBuilder.Entity<StageCourseCompleting>().HasOne(e => e.CourseCompleting)
+            .WithMany(e => e.StageCourseCompletings)
+            .HasForeignKey(e => e.CourseCompletingId);
 
 
     }
+
+    
 }

@@ -15,11 +15,16 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     public Progress Progress { get; private set; }
 
+    public StagesCountData StagesCountData { get; private set; }
+
+
 
     // Navigation properties
     public virtual User.User User { get; private set; }
 
     public virtual Course Course { get; private set; }
+
+    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; }
 
     //Methods
 
@@ -38,15 +43,23 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     }
 
-    public void UpdateProgress(StageId stageId, Progress newProgress)
+    public void UpdateProgress()
     {
+        Progress = Progress.Of(StagesCountData.CompletedStages / StagesCountData.TotalStages * 100);
+    }
+
+    public void CountNewStage(StageId stageId)
+    {
+        StagesCountData = StagesCountData.Of(StagesCountData.TotalStages, StagesCountData.CompletedStages + 1);
+
+        if (StagesCountData.CompletedStages == StagesCountData.TotalStages) Complete();
+        else UpdateProgress();
 
     }
 
-    private void UpdateStatus(StageId stageId)
+    private void Complete()
     {
-
-
+        Status = CompleteStatus.Of(CompleteStatutes.Completed);
     }
 
 }

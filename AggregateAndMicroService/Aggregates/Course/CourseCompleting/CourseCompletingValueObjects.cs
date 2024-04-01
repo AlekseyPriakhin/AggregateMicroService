@@ -77,3 +77,26 @@ public class Progress : ValueObject
         yield return Value;
     }
 }
+
+public class StagesCountData : ValueObject {
+    public int TotalStages { get; }
+
+    public int CompletedStages {get;}
+
+    private StagesCountData(int totalStages, int completedStages)
+    {
+        TotalStages = totalStages;
+        CompletedStages = completedStages;
+    }
+
+    public static StagesCountData Of(int totalStages, int completedStages) 
+    {
+        return new(totalStages, completedStages);
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return TotalStages;
+        yield return CompletedStages;
+    }
+}

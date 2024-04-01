@@ -26,6 +26,8 @@ public class Stage : Aggregate<StageId>
 
     public virtual Course Course { get; private set; }
 
+    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; }
+
 
     public static Stage Create(StageId id, string title, StageType type, StageDuration duration, CourseId courseId)
     {
