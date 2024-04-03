@@ -1,5 +1,7 @@
 using AggregateAndMicroService.Common;
 using AggregateAndMicroService.Aggregates.User;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 
 namespace AggregateAndMicroService.Aggregates.Course;
@@ -17,6 +19,9 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     public StagesCountData StagesCountData { get; private set; }
 
+    [NotMapped]
+    [JsonIgnore]
+    public bool IsCompleted => Status.Equals(CompleteStatus.Of(CompleteStatutes.Completed));
 
 
     // Navigation properties
