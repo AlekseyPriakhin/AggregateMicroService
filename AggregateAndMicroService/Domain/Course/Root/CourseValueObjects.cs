@@ -1,91 +1,101 @@
+using System.ComponentModel.DataAnnotations;
+
 using AggregateAndMicroService.Common;
 
 namespace AggregateAndMicroService.Aggregates.Course;
 
-public class CourseId
+public class CourseId : ValueObject
 {
+    [Key]
+    public Guid Value { get; }
 
-  public Guid Value { get; }
-
-  private CourseId(Guid value)
-  {
-    Value = value;
-  }
-
-  public static CourseId Of(Guid guid)
-  {
-    if (guid == Guid.Empty)
+    private CourseId() { }
+    private CourseId(Guid value)
     {
-      throw new ArgumentException("Invalid Id");
+        Value = value;
     }
 
-    return new(guid);
-  }
+    public static CourseId Of(Guid guid)
+    {
+        if (guid == Guid.Empty)
+        {
+            throw new ArgumentException("Invalid Id");
+        }
 
-  public static implicit operator Guid(CourseId id) => id.Value;
+        return new(guid);
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
+
+    public static implicit operator Guid(CourseId id) => id.Value;
 }
 
 public enum Statuses
 {
-  Active = 0,
-  Draft = 1,
-  Archived = 2
+    Active = 0,
+    Draft = 1,
+    Archived = 2
 }
 
 public class CourseStatus : ValueObject
 {
 
-  public Statuses Value { get; }
+    public Statuses Value { get; }
 
-  private CourseStatus(Statuses value)
-  {
-    Value = value;
-  }
-  public static CourseStatus Of(Statuses status) => new(status);
+    private CourseStatus() { Value = Statuses.Draft; }
+    private CourseStatus(Statuses value)
+    {
+        Value = value;
+    }
+    public static CourseStatus Of(Statuses status) => new(status);
 
-  /* public override bool Equals(object? obj)
-  {
-      return Value == ((MaterialStatus)obj).Value;
-  } */
+    /* public override bool Equals(object? obj)
+    {
+        return Value == ((MaterialStatus)obj).Value;
+    } */
 
-  protected override IEnumerable<object> GetEqualityComponents()
-  {
-    yield return Value;
-  }
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
 }
 
 public class Duration : ValueObject
 {
-  public TimeSpan Value { get; }
+    public TimeSpan Value { get; }
 
-  public Duration() { Value = TimeSpan.Zero; }
+    private Duration() { Value = TimeSpan.Zero; }
 
-  private Duration(TimeSpan? value)
-  {
-    Value = value is null ? TimeSpan.Zero : value.Value;
-  }
+    private Duration(TimeSpan? value)
+    {
+        Value = value is null ? TimeSpan.Zero : value.Value;
+    }
 
-  public static Duration Of(TimeSpan duration) => new(duration);
+    public static Duration Of(TimeSpan duration) => new(duration);
 
-  protected override IEnumerable<object> GetEqualityComponents()
-  {
-    yield return Value;
-  }
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
 }
 
 public class StageCount : ValueObject
 {
-  public int Value { get; private set; }
+    public int Value { get; private set; }
 
-  private StageCount(int value) { Value = value; }
+    private StageCount() { Value = 0; }
+    private StageCount(int value) { Value = value; }
 
-  public static StageCount Of(IEnumerable<Stage>? stages)
-  {
-    return new(stages is null ? 0 : stages.Count());
-  }
+    public static StageCount Of(IEnumerable<Stage>? stages)
+    {
+        return new(stages is null ? 0 : stages.Count());
+    }
 
-  protected override IEnumerable<object> GetEqualityComponents()
-  {
-    yield return Value;
-  }
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
 }

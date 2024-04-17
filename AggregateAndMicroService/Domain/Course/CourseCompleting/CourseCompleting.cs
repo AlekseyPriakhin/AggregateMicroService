@@ -9,9 +9,9 @@ namespace AggregateAndMicroService.Aggregates.Course;
 
 public class CourseCompleting : Aggregate<CourseCompletingId>
 {
-    public UserId UserId { get; private set; }
+    public Guid UserId { get; private set; }
 
-    public CourseId CourseId { get; private set; }
+    public Guid CourseId { get; private set; }
 
     public CompleteStatus Status { get; private set; }
 
@@ -21,19 +21,21 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     [NotMapped]
     [JsonIgnore]
-    public bool IsCompleted => Status.Equals(CompleteStatus.Of(CompleteStatutes.Completed));
+    public bool IsCompleted => Status.Equals(CompleteStatus.Of(CompleteStatuses.Completed));
 
 
     // Navigation properties
-    public virtual User.User User { get; private set; }
+    /* public virtual User.User User { get; private set; }
 
     public virtual Course Course { get; private set; }
 
-    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; }
+    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; } */
 
     //Methods
 
-    public static CourseCompleting Create(CourseCompletingId guid, UserId userId, CourseId courseId)
+    private CourseCompleting() { }
+
+    public static CourseCompleting Create(CourseCompletingId guid, Guid userId, Guid courseId)
     {
 
         return new CourseCompleting
@@ -41,7 +43,7 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
             Id = guid,
             UserId = userId,
             CourseId = courseId,
-            Status = CompleteStatus.Of(CompleteStatutes.InProggess),
+            Status = CompleteStatus.Of(CompleteStatuses.InProgress),
             Progress = Progress.Of(0),
 
         };
@@ -64,7 +66,7 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     private void Complete()
     {
-        Status = CompleteStatus.Of(CompleteStatutes.Completed);
+        Status = CompleteStatus.Of(CompleteStatuses.Completed);
     }
 
 }

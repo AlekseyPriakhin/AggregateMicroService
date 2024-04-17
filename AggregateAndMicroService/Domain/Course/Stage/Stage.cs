@@ -22,7 +22,7 @@ public class Stage : Aggregate<StageId>
 
     public StageDuration Duration { get; private set; }
 
-    public CourseId CourseId { get; private set; }
+    public Guid CourseId { get; private set; }
 
     public StageId? Previous { get; private set; }
 
@@ -31,12 +31,12 @@ public class Stage : Aggregate<StageId>
 
     // Navigation props 
 
-    public virtual Course Course { get; private set; }
+    /* public virtual Course Course { get; private set; }
 
-    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; }
+    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; } */
 
 
-    public static Stage Create(StageId id, string title, StageType type, StageDuration duration, CourseId courseId)
+    public static Stage Create(StageId id, string title, StageType type, StageDuration duration, Guid courseId)
     {
         return new Stage
         {

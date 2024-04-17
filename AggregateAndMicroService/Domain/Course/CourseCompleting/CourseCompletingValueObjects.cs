@@ -27,22 +27,24 @@ public class CourseCompletingId : ValueObject
     }
 }
 
-public enum CompleteStatutes
+public enum CompleteStatuses
 {
-    InProggess = 0,
+    InProgress = 0,
     Completed = 1
 }
 
 public class CompleteStatus : ValueObject
 {
-    public CompleteStatutes Value { get; }
+    public CompleteStatuses Value { get; }
 
-    private CompleteStatus(CompleteStatutes value)
+
+    private CompleteStatus() { }
+    private CompleteStatus(CompleteStatuses value)
     {
         Value = value;
     }
 
-    public static CompleteStatus Of(CompleteStatutes status)
+    public static CompleteStatus Of(CompleteStatuses status)
     {
         return new(status);
     }
@@ -57,6 +59,7 @@ public class Progress : ValueObject
 {
     public int Value { get; }
 
+    private Progress() { Value = 0; }
     private Progress(int value = 0)
     {
         Value = value;
@@ -78,18 +81,21 @@ public class Progress : ValueObject
     }
 }
 
-public class StagesCountData : ValueObject {
+public class StagesCountData : ValueObject
+{
     public int TotalStages { get; }
 
-    public int CompletedStages {get;}
+    public int CompletedStages { get; }
 
+
+    private StagesCountData() { }
     private StagesCountData(int totalStages, int completedStages)
     {
         TotalStages = totalStages;
         CompletedStages = completedStages;
     }
 
-    public static StagesCountData Of(int totalStages, int completedStages) 
+    public static StagesCountData Of(int totalStages, int completedStages)
     {
         return new(totalStages, completedStages);
     }

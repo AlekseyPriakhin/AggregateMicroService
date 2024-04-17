@@ -23,9 +23,20 @@ public class Course : Aggregate<CourseId>
     public bool IsActive => Status.Equals(CourseStatus.Of(Statuses.Active));
 
     // navigation properties
-    public virtual ICollection<CourseCompleting> Completings { get; private set; }
+    //public virtual ICollection<CourseCompleting> Completings { get; private set; }
 
-    public virtual ICollection<Stage> Stages { get; private set; }
+    //public virtual ICollection<Stage> Stages { get; private set; }
+
+    private Course() { }
+
+    private Course(CourseId id, CourseStatus status, string title, StageCount stageCount, string? description)
+    {
+        Id = id;
+        Status = status;
+        Title = title;
+        StageCount = stageCount;
+        Description = description;
+    }
 
     public static Course Create(CourseDTO courseDto, IEnumerable<Stage> stages)
     {
@@ -33,23 +44,16 @@ public class Course : Aggregate<CourseId>
         {
             throw new CreateWithArchivedStatusException();
         }
-        var isStagesValide = ValidateStages(stages);
 
-        var material = new Course
-        {
-            Id = courseDto.Id,
-            Status = isStagesValide ? courseDto.Status : CourseStatus.Of(Statuses.Draft),
-            Title = courseDto.Title,
-            Description = courseDto.Description,
-        };
+        var status = ValidateStages(stages) ? courseDto.Status : CourseStatus.Of(Statuses.Draft);
+        return new Course(courseDto.Id, status, courseDto.Title, StageCount.Of(stages), courseDto.Description);
 
-        return material;
     }
 
     public void UpdateStatus(CourseStatus status, IEnumerable<Stage> stages)
     {
-        var isStagesValide = ValidateStages(stages);
-        Status = isStagesValide ? status : CourseStatus.Of(Statuses.Draft);
+        var isStagesValid = ValidateStages(stages);
+        Status = isStagesValid ? status : CourseStatus.Of(Statuses.Draft);
     }
 
     public StageCourseCompleting? UpdateStageProgress(UpdateStageParams @params)
@@ -71,7 +75,7 @@ public class Course : Aggregate<CourseId>
 
         if (stageValidation.IsSuccess)
         {
-            completingToUpdate ??= StageCourseCompleting.Create(@params.CourseCompleting.Id, stage.Id);
+            completingToUpdate ??= StageCourseCompleting.Create(@params.CourseCompleting.Id.Value, stage.Id.Value);
             completingToUpdate.UpdateProgress(stage, @params.StageProgress, @params.CourseCompleting);
         }
 
@@ -115,7 +119,7 @@ public class Course : Aggregate<CourseId>
                                                 && e.StageProgress.Value >= Stage.MIN_COMPLETE_PROGRESS) is not null;
 
         return isPrevCompleted ? Result<bool>.Success(isPrevCompleted)
-                               : Result<bool>.Failure($"Previous stage {prevStage.StageId.Value} not completed");
+                               : Result<bool>.Failure($"Previous stage {prevStage.StageId} not completed");
     }
 
 }

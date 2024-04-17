@@ -9,9 +9,9 @@ public class StageCourseCompleting
 
     #region Props
 
-    public CourseCompletingId CourseCompletingId { get; private set; }
+    public Guid CourseCompletingId { get; private set; }
 
-    public StageId StageId { get; private set; }
+    public Guid StageId { get; private set; }
 
     public StageProgress StageProgress { get; private set; }
 
@@ -19,14 +19,15 @@ public class StageCourseCompleting
 
     #region Navigation Props
 
-    public virtual CourseCompleting CourseCompleting { get; private set; }
-    public virtual Stage Stage { get; private set; }
+    /* public virtual CourseCompleting CourseCompleting { get; private set; }
+    public virtual Stage Stage { get; private set; } */
 
     #endregion
 
     #region Methods
 
-    private StageCourseCompleting(CourseCompletingId completingId, StageId stageId)
+    private StageCourseCompleting() { }
+    private StageCourseCompleting(Guid completingId, Guid stageId)
     {
 
         CourseCompletingId = completingId;
@@ -35,7 +36,7 @@ public class StageCourseCompleting
     }
 
 
-    public static StageCourseCompleting Create(CourseCompletingId completingId, StageId stageId)
+    public static StageCourseCompleting Create(Guid completingId, Guid stageId)
     {
         return new StageCourseCompleting(completingId, stageId);
     }
@@ -47,13 +48,13 @@ public class StageCourseCompleting
         if (stage.IsInstantCompletable)
         {
             StageProgress = StageProgress.Of(100);
-            courseCompleting.CountNewStage(Stage.Id);
+            courseCompleting.CountNewStage(stage.Id);
             return;
         }
 
         StageProgress = newProgress;
 
-        if (StageProgress.Value > Stage.MIN_COMPLETE_PROGRESS) courseCompleting.CountNewStage(Stage.Id);
+        if (StageProgress.Value > Stage.MIN_COMPLETE_PROGRESS) courseCompleting.CountNewStage(stage.Id);
     }
 
 
@@ -66,6 +67,8 @@ public class StageCourseCompleting
 public class StageProgress : ValueObject
 {
     public int Value { get; }
+
+    private StageProgress() { Value = 0; }
 
     private StageProgress(int value = 0)
     {

@@ -1,14 +1,18 @@
+using System.ComponentModel.DataAnnotations;
+
 using AggregateAndMicroService.Common;
 
 namespace AggregateAndMicroService.Aggregates.Course;
 
-public class StageId
+public class StageId : ValueObject
 {
+    [Key]
     public Guid Value { get; private set; }
 
-    private StageId(Guid id)
+    private StageId() { }
+    private StageId(Guid value)
     {
-        Value = id;
+        Value = value;
     }
 
     public static StageId Of(Guid guid)
@@ -20,6 +24,10 @@ public class StageId
         return new(guid);
     }
 
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return Value;
+    }
 }
 
 public enum StageTypes
@@ -35,6 +43,7 @@ public class StageType : ValueObject
 
     public StageTypes Value { get; }
 
+    private StageType() { }
     private StageType(StageTypes value)
     {
         Value = value;
@@ -53,7 +62,7 @@ public class StageDuration : ValueObject
 {
     public TimeSpan Value { get; }
 
-    public StageDuration() { Value = TimeSpan.Zero; }
+    private StageDuration() { Value = TimeSpan.Zero; }
 
     private StageDuration(TimeSpan? value)
     {

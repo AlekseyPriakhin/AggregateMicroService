@@ -1,4 +1,4 @@
-using AggregateAndMicroService.Aggregates.Material;
+/* using AggregateAndMicroService.Aggregates.Material;
 using AggregateAndMicroService.Common;
 using AggregateAndMicroService.Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -54,4 +54,4 @@ public class MaterialService : IMaterialService {
 
     return true;
   }
-}
+} */

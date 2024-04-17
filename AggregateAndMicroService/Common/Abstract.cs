@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace AggregateAndMicroService.Common;
 
 public abstract class Entity<T> : IEntity<T>
@@ -9,7 +11,7 @@ public abstract class Entity<T> : IEntity<T>
 // Aggregates
 public abstract class Aggregate<TId> : Entity<TId>, IAggregate<TId>
 {
-    
+
 }
 
 

@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace AggregateAndMicroService.Aggregates.User;
 
 
 public class UserId
 {
-
+    [Key]
     public Guid Value { get; }
 
+    private UserId() { }
     private UserId(Guid value)
     {
         Value = value;
