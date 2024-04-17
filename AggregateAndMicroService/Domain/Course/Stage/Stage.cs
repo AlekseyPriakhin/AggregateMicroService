@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 using AggregateAndMicroService.Common;
 
-namespace AggregateAndMicroService.Aggregates.Course;
+namespace AggregateAndMicroService.Domain.Course;
 
 public class Stage : Aggregate<StageId>
 {
@@ -24,7 +24,7 @@ public class Stage : Aggregate<StageId>
 
     public Guid CourseId { get; private set; }
 
-    public StageId? Previous { get; private set; }
+    public Guid? Previous { get; private set; }
 
     [NotMapped]
     public bool IsInstantCompletable => INSTANT_COMPLETABLE.Contains(Type);
@@ -36,7 +36,7 @@ public class Stage : Aggregate<StageId>
     public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; } */
 
 
-    public static Stage Create(StageId id, string title, StageType type, StageDuration duration, Guid courseId)
+    public static Stage Create(StageId id, string title, StageType type, StageDuration duration, Guid courseId, Guid? previous = null)
     {
         return new Stage
         {
@@ -44,7 +44,8 @@ public class Stage : Aggregate<StageId>
             Title = title,
             Type = type,
             Duration = duration,
-            CourseId = courseId
+            CourseId = courseId,
+            Previous = previous
         };
     }
 

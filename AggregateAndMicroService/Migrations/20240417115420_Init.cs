@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AggregateAndMicroService.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,7 +46,7 @@ namespace AggregateAndMicroService.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "StageCourseCompleting",
+                name: "StageCourseCompletings",
                 columns: table => new
                 {
                     CourseCompletingId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -55,18 +55,24 @@ namespace AggregateAndMicroService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StageCourseCompleting", x => new { x.CourseCompletingId, x.StageId });
+                    table.PrimaryKey("PK_StageCourseCompletings", x => new { x.CourseCompletingId, x.StageId });
                 });
 
             migrationBuilder.CreateTable(
-                name: "StageId",
+                name: "Stages",
                 columns: table => new
                 {
-                    Value = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Previous = table.Column<Guid>(type: "uuid", nullable: true),
+                    Duration = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    Type = table.Column<int>(type: "integer", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StageId", x => x.Value);
+                    table.PrimaryKey("PK_Stages", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,39 +81,14 @@ namespace AggregateAndMicroService.Migrations
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    CompletedCoursesCount = table.Column<int>(type: "integer", nullable: false),
+                    CourseInProgressCount = table.Column<int>(type: "integer", nullable: false),
                     IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "Stage",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Title = table.Column<string>(type: "text", nullable: false),
-                    CourseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PreviousValue = table.Column<Guid>(type: "uuid", nullable: true),
-                    Duration = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    Type = table.Column<int>(type: "integer", nullable: false),
-                    IsDeleted = table.Column<bool>(type: "boolean", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stage", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Stage_StageId_PreviousValue",
-                        column: x => x.PreviousValue,
-                        principalTable: "StageId",
-                        principalColumn: "Value");
-                });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stage_PreviousValue",
-                table: "Stage",
-                column: "PreviousValue");
         }
 
         /// <inheritdoc />
@@ -120,16 +101,13 @@ namespace AggregateAndMicroService.Migrations
                 name: "Courses");
 
             migrationBuilder.DropTable(
-                name: "Stage");
+                name: "StageCourseCompletings");
 
             migrationBuilder.DropTable(
-                name: "StageCourseCompleting");
+                name: "Stages");
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "StageId");
         }
     }
 }

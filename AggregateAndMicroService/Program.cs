@@ -1,8 +1,5 @@
 using System.Text.Json.Serialization;
 
-using AggregateAndMicroService.Aggregates.Course;
-using AggregateAndMicroService.Aggregates.User;
-using AggregateAndMicroService.Contracts;
 using AggregateAndMicroService.Infrastructure;
 
 using Microsoft.EntityFrameworkCore;

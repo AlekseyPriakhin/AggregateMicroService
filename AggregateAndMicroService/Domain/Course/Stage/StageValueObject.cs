@@ -2,11 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 using AggregateAndMicroService.Common;
 
-namespace AggregateAndMicroService.Aggregates.Course;
+namespace AggregateAndMicroService.Domain.Course;
 
 public class StageId : ValueObject
 {
-    [Key]
     public Guid Value { get; private set; }
 
     private StageId() { }

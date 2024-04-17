@@ -1,8 +1,6 @@
 using AggregateAndMicroService.Common;
 
-namespace AggregateAndMicroService.Aggregates.Course;
-
-
+namespace AggregateAndMicroService.Domain.Course;
 
 public class StageCourseCompleting
 {

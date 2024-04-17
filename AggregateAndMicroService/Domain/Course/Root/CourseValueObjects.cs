@@ -2,11 +2,10 @@ using System.ComponentModel.DataAnnotations;
 
 using AggregateAndMicroService.Common;
 
-namespace AggregateAndMicroService.Aggregates.Course;
+namespace AggregateAndMicroService.Domain.Course;
 
 public class CourseId : ValueObject
 {
-    [Key]
     public Guid Value { get; }
 
     private CourseId() { }

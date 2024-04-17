@@ -1,21 +1,24 @@
-using AggregateAndMicroService.Aggregates.Course;
-using AggregateAndMicroService.Aggregates.User;
+
+using AggregateAndMicroService.Domain.Course;
+using AggregateAndMicroService.Domain.User;
 
 using Microsoft.EntityFrameworkCore;
 
 namespace AggregateAndMicroService.Infrastructure;
 
+
+// TODO Добавить отложенную обработку доменных событий
 public class LearningContext : DbContext
 {
     public DbSet<Course> Courses { get; set; }
 
     public DbSet<User> Users { get; set; }
 
-    /* public DbSet<Stage> Stages { get; set; }
+    public DbSet<Stage> Stages { get; set; }
 
     public DbSet<StageCourseCompleting> StageCourseCompletings { get; set; }
 
-    public DbSet<CourseCompleting> CourseCompleting { get; set; } */
+    public DbSet<CourseCompleting> CourseCompleting { get; set; }
 
     public LearningContext(DbContextOptions<LearningContext> options) : base(options)
     {

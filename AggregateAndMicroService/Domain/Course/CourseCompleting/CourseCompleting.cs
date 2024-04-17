@@ -1,11 +1,10 @@
 using AggregateAndMicroService.Common;
-using AggregateAndMicroService.Aggregates.User;
+using AggregateAndMicroService.Domain.DomainEvents;
+
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-
-namespace AggregateAndMicroService.Aggregates.Course;
-
+namespace AggregateAndMicroService.Domain.Course;
 
 public class CourseCompleting : Aggregate<CourseCompletingId>
 {
@@ -67,6 +66,7 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
     private void Complete()
     {
         Status = CompleteStatus.Of(CompleteStatuses.Completed);
+        AddDomainEvent(new CourseCompletedDomainEvent(this));
     }
 
 }

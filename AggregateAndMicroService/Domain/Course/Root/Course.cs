@@ -1,14 +1,9 @@
-using System.Collections;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
-using AggregateAndMicroService.Aggregates.Course;
-using AggregateAndMicroService.Aggregates.User;
 using AggregateAndMicroService.Common;
 
-using Microsoft.Net.Http.Headers;
-
-namespace AggregateAndMicroService.Aggregates.Course;
+namespace AggregateAndMicroService.Domain.Course;
 
 
 public class Course : Aggregate<CourseId>
@@ -47,6 +42,12 @@ public class Course : Aggregate<CourseId>
 
         var status = ValidateStages(stages) ? courseDto.Status : CourseStatus.Of(Statuses.Draft);
         return new Course(courseDto.Id, status, courseDto.Title, StageCount.Of(stages), courseDto.Description);
+
+    }
+
+    public void Start(Guid userId)
+    {
+        var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), userId, Id.Value);
 
     }
 
@@ -134,9 +135,19 @@ public record UpdateStageParams
 
 public record CourseDTO
 {
-    public CourseId Id { get; } = CourseId.Of(Guid.NewGuid());
+    public CourseId Id { get; init; }
     public CourseStatus Status { get; init; } = CourseStatus.Of(Statuses.Draft);
     public string Title { get; init; }
     public string Description { get; init; }
+
+    private CourseDTO() { }
+
+    public CourseDTO(string title, string? description, Guid? id)
+    {
+        Title = title;
+        Description = description ?? string.Empty;
+        Id = id is null ? CourseId.Of(Guid.NewGuid()) : CourseId.Of(id.Value);
+        Status = CourseStatus.Of(Statuses.Draft);
+    }
 
 }

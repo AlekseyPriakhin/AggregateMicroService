@@ -23,7 +23,7 @@ namespace AggregateAndMicroService.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.Course.Course", b =>
+            modelBuilder.Entity("AggregateAndMicroService.Domain.Course.Course", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -38,7 +38,7 @@ namespace AggregateAndMicroService.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ComplexProperty<Dictionary<string, object>>("StageCount", "AggregateAndMicroService.Aggregates.Course.Course.StageCount#StageCount", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("StageCount", "AggregateAndMicroService.Domain.Course.Course.StageCount#StageCount", b1 =>
                         {
                             b1.IsRequired();
 
@@ -49,7 +49,7 @@ namespace AggregateAndMicroService.Migrations
                                 .HasColumnName("StageCount");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("Status", "AggregateAndMicroService.Aggregates.Course.Course.Status#CourseStatus", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Status", "AggregateAndMicroService.Domain.Course.Course.Status#CourseStatus", b1 =>
                         {
                             b1.IsRequired();
 
@@ -63,7 +63,7 @@ namespace AggregateAndMicroService.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.Course.CourseCompleting", b =>
+            modelBuilder.Entity("AggregateAndMicroService.Domain.Course.CourseCompleting", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -77,7 +77,7 @@ namespace AggregateAndMicroService.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Progress", "AggregateAndMicroService.Aggregates.Course.CourseCompleting.Progress#Progress", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Progress", "AggregateAndMicroService.Domain.Course.CourseCompleting.Progress#Progress", b1 =>
                         {
                             b1.IsRequired();
 
@@ -88,7 +88,7 @@ namespace AggregateAndMicroService.Migrations
                                 .HasColumnName("Progress");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("StagesCountData", "AggregateAndMicroService.Aggregates.Course.CourseCompleting.StagesCountData#StagesCountData", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("StagesCountData", "AggregateAndMicroService.Domain.Course.CourseCompleting.StagesCountData#StagesCountData", b1 =>
                         {
                             b1.IsRequired();
 
@@ -105,7 +105,7 @@ namespace AggregateAndMicroService.Migrations
                                 .HasColumnName("TotalStages");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("Status", "AggregateAndMicroService.Aggregates.Course.CourseCompleting.Status#CompleteStatus", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Status", "AggregateAndMicroService.Domain.Course.CourseCompleting.Status#CompleteStatus", b1 =>
                         {
                             b1.IsRequired();
 
@@ -119,7 +119,7 @@ namespace AggregateAndMicroService.Migrations
                     b.ToTable("CourseCompleting");
                 });
 
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.Course.Stage", b =>
+            modelBuilder.Entity("AggregateAndMicroService.Domain.Course.Stage", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
@@ -130,14 +130,14 @@ namespace AggregateAndMicroService.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("PreviousValue")
+                    b.Property<Guid?>("Previous")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.ComplexProperty<Dictionary<string, object>>("Duration", "AggregateAndMicroService.Aggregates.Course.Stage.Duration#StageDuration", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Duration", "AggregateAndMicroService.Domain.Course.Stage.Duration#StageDuration", b1 =>
                         {
                             b1.IsRequired();
 
@@ -146,7 +146,7 @@ namespace AggregateAndMicroService.Migrations
                                 .HasColumnName("Duration");
                         });
 
-                    b.ComplexProperty<Dictionary<string, object>>("Type", "AggregateAndMicroService.Aggregates.Course.Stage.Type#StageType", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("Type", "AggregateAndMicroService.Domain.Course.Stage.Type#StageType", b1 =>
                         {
                             b1.IsRequired();
 
@@ -157,12 +157,10 @@ namespace AggregateAndMicroService.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PreviousValue");
-
-                    b.ToTable("Stage");
+                    b.ToTable("Stages");
                 });
 
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.Course.StageCourseCompleting", b =>
+            modelBuilder.Entity("AggregateAndMicroService.Domain.Course.StageCourseCompleting", b =>
                 {
                     b.Property<Guid>("CourseCompletingId")
                         .HasColumnType("uuid");
@@ -170,7 +168,7 @@ namespace AggregateAndMicroService.Migrations
                     b.Property<Guid>("StageId")
                         .HasColumnType("uuid");
 
-                    b.ComplexProperty<Dictionary<string, object>>("StageProgress", "AggregateAndMicroService.Aggregates.Course.StageCourseCompleting.StageProgress#StageProgress", b1 =>
+                    b.ComplexProperty<Dictionary<string, object>>("StageProgress", "AggregateAndMicroService.Domain.Course.StageCourseCompleting.StageProgress#StageProgress", b1 =>
                         {
                             b1.IsRequired();
 
@@ -183,24 +181,19 @@ namespace AggregateAndMicroService.Migrations
 
                     b.HasKey("CourseCompletingId", "StageId");
 
-                    b.ToTable("StageCourseCompleting");
+                    b.ToTable("StageCourseCompletings");
                 });
 
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.Course.StageId", b =>
-                {
-                    b.Property<Guid>("Value")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Value");
-
-                    b.ToTable("StageId");
-                });
-
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.User.User", b =>
+            modelBuilder.Entity("AggregateAndMicroService.Domain.User.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
+
+                    b.Property<int>("CompletedCoursesCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CourseInProgressCount")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
@@ -212,15 +205,6 @@ namespace AggregateAndMicroService.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("AggregateAndMicroService.Aggregates.Course.Stage", b =>
-                {
-                    b.HasOne("AggregateAndMicroService.Aggregates.Course.StageId", "Previous")
-                        .WithMany()
-                        .HasForeignKey("PreviousValue");
-
-                    b.Navigation("Previous");
                 });
 #pragma warning restore 612, 618
         }

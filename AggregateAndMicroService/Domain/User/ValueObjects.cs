@@ -1,11 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace AggregateAndMicroService.Aggregates.User;
+namespace AggregateAndMicroService.Domain.User;
 
 
 public class UserId
 {
-    [Key]
     public Guid Value { get; }
 
     private UserId() { }
