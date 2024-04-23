@@ -1,4 +1,4 @@
-using AggregateAndMicroService.Domain.Course;
+using AggregateAndMicroService.Domain.CourseProgress;
 
 using MediatR;
 

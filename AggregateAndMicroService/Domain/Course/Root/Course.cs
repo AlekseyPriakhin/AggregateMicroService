@@ -45,42 +45,10 @@ public class Course : Aggregate<CourseId>
 
     }
 
-    public void Start(Guid userId)
-    {
-        var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), userId, Id.Value);
-
-    }
-
     public void UpdateStatus(CourseStatus status, IEnumerable<Stage> stages)
     {
         var isStagesValid = ValidateStages(stages);
         Status = isStagesValid ? status : CourseStatus.Of(Statuses.Draft);
-    }
-
-    public StageCourseCompleting? UpdateStageProgress(UpdateStageParams @params)
-    {
-        if (!IsActive)
-            throw new Exception("Course is not active");
-
-        if (@params.CourseCompleting.IsCompleted)
-            throw new Exception("Course already completed");
-
-        var id = @params.StageId;
-
-        var stage = @params.Stages.FirstOrDefault(e => e.Id.Equals(id))
-          ?? throw new Exception("Stage not found");
-
-        var completingToUpdate = @params.StagesCompleting.FirstOrDefault(e => e.StageId.Equals(id));
-
-        var stageValidation = ValidateStageProgress(id, @params.Stages, @params.StagesCompleting);
-
-        if (stageValidation.IsSuccess)
-        {
-            completingToUpdate ??= StageCourseCompleting.Create(@params.CourseCompleting.Id.Value, stage.Id.Value);
-            completingToUpdate.UpdateProgress(stage, @params.StageProgress, @params.CourseCompleting);
-        }
-
-        return stageValidation.IsFailure ? throw new Exception(stageValidation.ErrorMessage) : completingToUpdate;
     }
 
     private static bool ValidateStages(IEnumerable<Stage> stages)
@@ -100,37 +68,6 @@ public class Course : Aggregate<CourseId>
         return stack.Count == 0;
     }
 
-    private static Result<bool> ValidateStageProgress(StageId stageId, IEnumerable<Stage> stages, IEnumerable<StageCourseCompleting> stagesCompleting)
-    {
-
-        if (stagesCompleting is null || stagesCompleting.Any() == false)
-        {
-            return Result<bool>.Failure("Stages empty");
-        }
-
-        var stageToComplete = stages.FirstOrDefault(x => x.Id.Equals(stageId)) ?? throw new Exception($"Stage {stageId} not found");
-
-        if (stageToComplete.Previous is null) return Result<bool>.Success(true);
-
-
-        var prevStage = stagesCompleting.FirstOrDefault(x => x.StageId.Equals(stageToComplete.Previous))
-                  ?? throw new Exception($"Stage {stageToComplete.Previous} before stage {stageId} not found");
-
-        var isPrevCompleted = stagesCompleting.FirstOrDefault(e => e.StageId.Equals(prevStage.StageId)
-                                                && e.StageProgress.Value >= Stage.MIN_COMPLETE_PROGRESS) is not null;
-
-        return isPrevCompleted ? Result<bool>.Success(isPrevCompleted)
-                               : Result<bool>.Failure($"Previous stage {prevStage.StageId} not completed");
-    }
-
-}
-public record UpdateStageParams
-{
-    public StageId StageId { get; init; }
-    public CourseCompleting CourseCompleting { get; init; }
-    public StageProgress StageProgress { get; init; }
-    public IEnumerable<StageCourseCompleting> StagesCompleting { get; init; }
-    public IEnumerable<Stage> Stages { get; init; }
 }
 
 public record CourseDTO

@@ -1,6 +1,6 @@
 using AggregateAndMicroService.Common;
 
-namespace AggregateAndMicroService.Domain.Course;
+namespace AggregateAndMicroService.Domain.CourseProgress;
 
 public class CourseCompletingId : ValueObject
 {
