@@ -1,5 +1,6 @@
 
 using AggregateAndMicroService.Domain.Course;
+using AggregateAndMicroService.Domain.CourseProgress;
 using AggregateAndMicroService.Domain.User;
 
 using Microsoft.EntityFrameworkCore;

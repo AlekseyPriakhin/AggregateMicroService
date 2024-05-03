@@ -75,11 +75,6 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
         return stageValidation.IsFailure ? throw new Exception(stageValidation.ErrorMessage) : completingToUpdate;
     }
 
-    public void UpdateProgress()
-    {
-        Progress = Progress.Of(StagesCountData.CompletedStages / StagesCountData.TotalStages * 100);
-    }
-
     public void CountNewStage(StageId stageId)
     {
         StagesCountData = StagesCountData.Of(StagesCountData.TotalStages, StagesCountData.CompletedStages + 1);
@@ -88,6 +83,19 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
         else UpdateProgress();
 
     }
+
+    public void TryUpdateCompleting(UpdateParams @params)
+    {
+        if (Status.Equals(CompleteStatus.Of(CompleteStatuses.Completed))) return;
+
+        // Todo
+    }
+
+    private void UpdateProgress()
+    {
+        Progress = Progress.Of(StagesCountData.CompletedStages / StagesCountData.TotalStages * 100);
+    }
+
 
     private void Complete()
     {
@@ -121,11 +129,15 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 }
 
 
-public record UpdateStageParams
+public record UpdateParams
 {
     public Course.Course Course { get; init; }
-    public StageId StageId { get; init; }
-    public StageProgress StageProgress { get; init; }
     public IEnumerable<StageCourseCompleting> StagesCompleting { get; init; }
     public IEnumerable<Stage> Stages { get; init; }
+}
+
+public record UpdateStageParams : UpdateParams
+{
+    public StageId StageId { get; init; }
+    public StageProgress StageProgress { get; init; }
 }

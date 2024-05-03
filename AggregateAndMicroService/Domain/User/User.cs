@@ -24,17 +24,23 @@ public class User : Aggregate<UserId>
         };
     }
 
-    public void UpdateCompletedCourseCount()
+    public void UpdateCompletedCourseCount(bool isIncrease)
     {
-        CompletedCoursesCount++;
-        UpdateCourseInProgressCount(false);
+        if (isIncrease)
+        {
+            CompletedCoursesCount++;
+            UpdateCourseInProgressCount(false);
+
+        }
+        else CompletedCoursesCount--;
     }
 
 
     // Можно ли сюда передать CourseCompleting 
     public void UpdateCourseInProgressCount(bool isIncrease)
     {
-        CompletedCoursesCount++;
+        if (isIncrease) CompletedCoursesCount++;
+        else CompletedCoursesCount--;
     }
 
 }
