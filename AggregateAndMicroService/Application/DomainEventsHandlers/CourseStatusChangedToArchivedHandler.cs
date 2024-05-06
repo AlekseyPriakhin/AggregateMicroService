@@ -12,6 +12,8 @@ public class CourseStatusChangedToArchivedHandler : INotificationHandler<CourseS
     }
     public Task Handle(CourseStatusChangedToArchived notification, CancellationToken cancellationToken)
     {
+        //throw new Exception("Course Status Changed");
+        System.Console.WriteLine("Change status to Archived");
         return Task.CompletedTask;
     }
 }

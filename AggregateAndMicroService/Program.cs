@@ -1,7 +1,12 @@
 using System.Text.Json.Serialization;
 
+using AggregateAndMicroService.Application.Mappers;
+using AggregateAndMicroService.Domain.Course;
 using AggregateAndMicroService.Infrastructure;
 
+using MediatR;
+
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +20,7 @@ else throw new Exception("Файл конфигурации config.json отсу
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 
 builder.Services.AddDbContext<LearningContext>(options =>
@@ -39,6 +45,25 @@ app.MapGet("/materials", async (LearningContext context) =>
     //var items = await context.Courses.Take(10).ToListAsync();
 
     //return Results.Ok(items);
+});
+
+app.MapGet("/courses", async ([FromServices] LearningContext context) =>
+{
+    return Results.Ok(await context.Courses.Take(10).Select(e => CourseMapper.ToOutCourseDto(e)).ToListAsync());
+});
+
+app.MapGet("/courses/{courseId}", async ([FromServices] LearningContext context, [FromServices] IMediator _mediator, [FromRoute] string courseId) =>
+{
+    var course = await context.Courses.FindAsync(CourseId.Of(Guid.Parse(courseId)));
+    if (course is null) return Results.NotFound($"Курса с таким Id - {courseId} не существует");
+
+    var courseStages = await context.Stages.Where(e => e.CourseId == course.Id.Value).ToListAsync();
+
+    course.UpdateStatus(CourseStatus.Of(Statuses.Draft), courseStages);
+
+    await context.SaveEntitiesAsync();
+
+    return Results.Ok(CourseMapper.ToOutCourseDto(course));
 });
 
 app.MapPost("/materials", async (LearningContext context) =>

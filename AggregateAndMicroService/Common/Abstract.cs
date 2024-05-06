@@ -1,4 +1,5 @@
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 using MediatR;
 
@@ -7,18 +8,23 @@ namespace AggregateAndMicroService.Common;
 public abstract class Entity<T> : IEntity<T>
 {
     public T Id { get; set; }
+
+    [JsonIgnore]
     public bool IsDeleted { get; set; }
 
     private List<INotification> _domainEvents;
+
+    [JsonIgnore]
+    [NotMapped]
     public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
 
-    public void AddDomainEvent(INotification eventItem)
+    protected void AddDomainEvent(INotification eventItem)
     {
         _domainEvents = _domainEvents ?? new List<INotification>();
         _domainEvents.Add(eventItem);
     }
 
-    public void RemoveDomainEvent(INotification eventItem)
+    protected void RemoveDomainEvent(INotification eventItem)
     {
         _domainEvents?.Remove(eventItem);
     }
