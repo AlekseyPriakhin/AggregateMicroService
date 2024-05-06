@@ -1,3 +1,7 @@
+using System.Collections.ObjectModel;
+
+using MediatR;
+
 namespace AggregateAndMicroService.Common;
 
 
@@ -19,4 +23,16 @@ public interface IEntity<T> : IEntity
 public interface IEntity
 {
     public bool IsDeleted { get; set; }
+}
+
+
+public interface IDomainEventGenerator
+{
+    public IReadOnlyCollection<INotification> DomainEvents { get; }
+
+    public void AddDomainEvent(INotification eventItem);
+
+    public void RemoveDomainEvent(INotification eventItem);
+
+    public void ClearDomainEvents();
 }

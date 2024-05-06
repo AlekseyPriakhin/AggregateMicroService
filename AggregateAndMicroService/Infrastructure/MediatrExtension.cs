@@ -13,26 +13,18 @@ namespace Ordering.Infrastructure
     {
         public static async Task DispatchDomainEventsAsync(this IMediator mediator, LearningContext ctx)
         {
-            var ent = ctx.ChangeTracker.Entries<Entity<Guid>>().ToList();
+            var entities = ctx.ChangeTracker.Entries()
+                        .Where(e => e.Entity is IDomainEventGenerator)
+                        .Select(e => (IDomainEventGenerator)e.Entity)
+                        .Where(e => e.DomainEvents != null && e.DomainEvents.Count > 0)
+                        .ToList();
 
-            foreach (var entity in ent)
-            {
-                System.Console.WriteLine(entity.Entity.GetType());
-            }
 
-            System.Console.WriteLine(ent.Count());
-            System.Console.WriteLine(ctx.ChangeTracker.Entries().Count());
-
-            var domainEntities = ctx.ChangeTracker
-                                    .Entries<Entity<object>>()
-                                    .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Count != 0);
-
-            var domainEvents = domainEntities
-                                .SelectMany(x => x.Entity.DomainEvents)
+            var domainEvents = entities
+                                .SelectMany(x => x.DomainEvents)
                                 .ToList();
 
-            domainEntities.ToList()
-                          .ForEach(entity => entity.Entity.ClearDomainEvents());
+            entities.ForEach(entity => entity.ClearDomainEvents());
 
             var tasks = domainEvents
                 .Select(async (domainEvent) =>

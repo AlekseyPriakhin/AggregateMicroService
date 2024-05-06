@@ -5,7 +5,7 @@ using MediatR;
 
 namespace AggregateAndMicroService.Common;
 
-public abstract class Entity<T> : IEntity<T>
+public abstract class Entity<T> : IEntity<T>, IDomainEventGenerator
 {
     public T Id { get; set; }
 
@@ -18,13 +18,13 @@ public abstract class Entity<T> : IEntity<T>
     [NotMapped]
     public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
 
-    protected void AddDomainEvent(INotification eventItem)
+    public void AddDomainEvent(INotification eventItem)
     {
         _domainEvents = _domainEvents ?? new List<INotification>();
         _domainEvents.Add(eventItem);
     }
 
-    protected void RemoveDomainEvent(INotification eventItem)
+    public void RemoveDomainEvent(INotification eventItem)
     {
         _domainEvents?.Remove(eventItem);
     }
