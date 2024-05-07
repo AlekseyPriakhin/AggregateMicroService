@@ -41,7 +41,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGetRoutes();
+app.MapGetRoutes()
+    .MapPutRoutes();
 
 app.Seed();
 app.Run();

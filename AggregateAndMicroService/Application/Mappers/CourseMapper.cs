@@ -7,16 +7,18 @@ namespace AggregateAndMicroService.Application.Mappers;
 public static class CourseMapper
 {
 
-    public static ResponseCourseDto ToResponseCourseDto(Course course)
+    public static CourseResponseDto ToCourseResponseDto(Course course)
     {
-        return new ResponseCourseDto
+        return new CourseResponseDto
         {
             Id = course.Id.Value.ToString(),
             Title = course.Title,
             Status = course.Status.Value,
             StagesCount = course.StageCount.Value,
             Description = course.Description,
-            Stages = course.Stages.Select(e => StageMapper.ToStageResponseDto(e)).ToList()
+            Stages = course.Stages is not null
+                ? course.Stages.Select(StageMapper.ToStageResponseDto).ToList()
+                : []
         };
     }
 

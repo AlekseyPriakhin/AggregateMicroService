@@ -22,21 +22,29 @@ public static class GetMapper
             var items = await query.Skip((page - 1) * perPage)
                                     .Take(perPage)
                                     .Include(e => e.Stages)
-                                    .Select(e => ToResponseCourseDto(e))
+                                    .Select(e => ToCourseResponseDto(e))
                                     .AsNoTracking()
                                     .ToListAsync(token);
 
             var response = CreateResponse(items, GetPagination(items, page, perPage, total));
             return Results.Ok(response);
-        }).WithOpenApi();
+        })
+        .WithName("GetCourses")
+        .WithOpenApi();
 
         app.MapGet("api/v1/courses/{courseId}", async ([FromServices] LearningContext context, [FromRoute] string courseId, CancellationToken token) =>
         {
-            var course = await context.Courses.FindAsync(CourseId.Of(Guid.Parse(courseId)), token);
-            return course is null
-                ? Results.NotFound(CreateResponse($"Курс с таким Id - {courseId} не существует"))
-                : Results.Ok(CreateResponse(ToResponseCourseDto(course)));
-        }).WithOpenApi();
+            var course = await context.Courses
+                                .Where(e => e.Id.Equals(CourseId.Of(Guid.Parse(courseId))))
+                                .Include(e => e.Stages)
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(token);
+            if (course is null) return Results.NotFound(CreateResponse($"Курс с таким Id - {courseId} не существует"));
+
+            return Results.Ok(CreateResponse(ToCourseResponseDto(course)));
+        })
+        .WithName("GetCourse")
+        .WithOpenApi();
 
         return app;
 
