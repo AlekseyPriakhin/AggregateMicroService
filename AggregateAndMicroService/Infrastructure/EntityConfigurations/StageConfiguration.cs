@@ -12,8 +12,10 @@ public class StageConfiguration : IEntityTypeConfiguration<Stage>
 
         builder.HasKey(e => e.Id);
 
-        builder.Property(e => e.Id).ValueGeneratedNever()
-        .HasConversion(id => id.Value, dbId => StageId.Of(dbId));
+        builder.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasConversion(id => id.Value, dbId => StageId.Of(dbId))
+                .IsRequired();
 
         builder.ComplexProperty(
             x => x.Type,
@@ -27,8 +29,11 @@ public class StageConfiguration : IEntityTypeConfiguration<Stage>
                     .HasColumnName("Duration")
                     .IsRequired());
 
-        /* builder.HasOne(e => e.Course)
+        builder.Property(e => e.CourseId)
+                .HasConversion(id => id.Value, cId => CourseId.Of(cId));
+
+        builder.HasOne(e => e.Course)
             .WithMany(e => e.Stages)
-            .HasForeignKey(e => e.CourseId); */
+            .HasForeignKey(e => e.CourseId);
     }
 }

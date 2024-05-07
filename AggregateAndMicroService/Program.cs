@@ -40,42 +40,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-/* 
-app.MapGet("/materials", async (LearningContext context) =>
-{
-    //var items = await context.Courses.Take(10).ToListAsync();
 
-    //return Results.Ok(items);
-});
-
-app.MapGet("/courses", async ([FromServices] LearningContext context) =>
-{
-    return Results.Ok(await context.Courses.Take(10).Select(e => CourseMapper.ToResponseCourseDto(e)).ToListAsync());
-});
-
-app.MapGet("/courses/{courseId}", async ([FromServices] LearningContext context, [FromServices] IMediator _mediator, [FromRoute] string courseId) =>
-{
-    var course = await context.Courses.FindAsync(CourseId.Of(Guid.Parse(courseId)));
-    if (course is null) return Results.NotFound($"Курса с таким Id - {courseId} не существует");
-
-    var courseStages = await context.Stages.Where(e => e.CourseId == course.Id.Value).ToListAsync();
-
-    course.UpdateStatus(CourseStatus.Of(Statuses.Draft), courseStages);
-
-    await context.SaveEntitiesAsync();
-
-    return Results.Ok(CourseMapper.ToResponseCourseDto(course));
-});
-
-app.MapPost("/materials", async (LearningContext context) =>
-{
-
-    await context.SaveChangesAsync();
-})
- */
 app.MapGetRoutes();
 
-SeedData.Seed(app);
-
+app.Seed();
 app.Run();
 

@@ -16,6 +16,7 @@ public static class CourseMapper
             Status = course.Status.Value,
             StagesCount = course.StageCount.Value,
             Description = course.Description,
+            Stages = course.Stages.Select(e => StageMapper.ToStageResponseDto(e)).ToList()
         };
     }
 

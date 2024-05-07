@@ -21,6 +21,7 @@ public static class GetMapper
             var total = await query.CountAsync(token);
             var items = await query.Skip((page - 1) * perPage)
                                     .Take(perPage)
+                                    .Include(e => e.Stages)
                                     .Select(e => ToResponseCourseDto(e))
                                     .AsNoTracking()
                                     .ToListAsync(token);

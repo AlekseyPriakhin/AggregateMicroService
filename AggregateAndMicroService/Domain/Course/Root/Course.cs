@@ -21,7 +21,7 @@ public class Course : Aggregate<CourseId>
     // navigation properties
     //public virtual ICollection<CourseCompleting> Completings { get; private set; }
 
-    //public virtual ICollection<Stage> Stages { get; private set; }
+    public virtual ICollection<Stage> Stages { get; private set; }
 
     private Course() : base() { }
 

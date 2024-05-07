@@ -3,9 +3,9 @@ using AggregateAndMicroService.Domain.Course;
 using AggregateAndMicroService.Domain.User;
 
 namespace AggregateAndMicroService.Infrastructure;
-public class SeedData
+public static class SeedData
 {
-    public static void Seed(IHost app)
+    public static WebApplication Seed(this WebApplication app)
     {
         using var scope = app.Services.CreateScope();
         using var context = scope.ServiceProvider.GetRequiredService<LearningContext>() ?? throw new Exception("Не удалось получить контекст бд");
@@ -25,6 +25,8 @@ public class SeedData
             context.Courses.Add(course);
             context.SaveChanges();
         }
+
+        return app;
     }
 
     private static void InitStages(LearningContext context, Guid courseId)
