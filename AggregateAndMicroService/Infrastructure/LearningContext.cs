@@ -8,8 +8,6 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-using Ordering.Infrastructure;
-
 namespace AggregateAndMicroService.Infrastructure;
 
 
