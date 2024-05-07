@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 
 using AggregateAndMicroService.Application.Mappers;
+using AggregateAndMicroService.Application.Routes;
 using AggregateAndMicroService.Domain.Course;
 using AggregateAndMicroService.Infrastructure;
 
@@ -39,7 +40,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+/* 
 app.MapGet("/materials", async (LearningContext context) =>
 {
     //var items = await context.Courses.Take(10).ToListAsync();
@@ -49,7 +50,7 @@ app.MapGet("/materials", async (LearningContext context) =>
 
 app.MapGet("/courses", async ([FromServices] LearningContext context) =>
 {
-    return Results.Ok(await context.Courses.Take(10).Select(e => CourseMapper.ToOutCourseDto(e)).ToListAsync());
+    return Results.Ok(await context.Courses.Take(10).Select(e => CourseMapper.ToResponseCourseDto(e)).ToListAsync());
 });
 
 app.MapGet("/courses/{courseId}", async ([FromServices] LearningContext context, [FromServices] IMediator _mediator, [FromRoute] string courseId) =>
@@ -63,7 +64,7 @@ app.MapGet("/courses/{courseId}", async ([FromServices] LearningContext context,
 
     await context.SaveEntitiesAsync();
 
-    return Results.Ok(CourseMapper.ToOutCourseDto(course));
+    return Results.Ok(CourseMapper.ToResponseCourseDto(course));
 });
 
 app.MapPost("/materials", async (LearningContext context) =>
@@ -71,9 +72,8 @@ app.MapPost("/materials", async (LearningContext context) =>
 
     await context.SaveChangesAsync();
 })
-
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+ */
+app.MapGetRoutes();
 
 SeedData.Seed(app);
 

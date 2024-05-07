@@ -1,4 +1,4 @@
-using AggregateAndMicroService.Application.DTO;
+using AggregateAndMicroService.Application.DTO.Response;
 using AggregateAndMicroService.Domain.Course;
 
 namespace AggregateAndMicroService.Application.Mappers;
@@ -7,9 +7,9 @@ namespace AggregateAndMicroService.Application.Mappers;
 public static class CourseMapper
 {
 
-    public static OutCourseDto ToOutCourseDto(Course course)
+    public static ResponseCourseDto ToResponseCourseDto(Course course)
     {
-        return new OutCourseDto
+        return new ResponseCourseDto
         {
             Id = course.Id.Value.ToString(),
             Title = course.Title,

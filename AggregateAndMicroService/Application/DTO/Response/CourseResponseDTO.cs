@@ -1,9 +1,9 @@
 using AggregateAndMicroService.Domain.Course;
 
-namespace AggregateAndMicroService.Application.DTO;
+namespace AggregateAndMicroService.Application.DTO.Response;
 
 
-public record OutCourseDto
+public record ResponseCourseDto
 {
     public string Id { get; init; }
 
@@ -14,6 +14,4 @@ public record OutCourseDto
     public Statuses Status { get; init; }
 
     public int StagesCount { get; init; }
-
-
 }
