@@ -15,3 +15,9 @@ public record UpdateCourseStatusDTO
 {
     public Statuses Status { get; init; }
 }
+
+
+public record StartCourseDTO
+{
+    public string UserId { get; init; }
+}

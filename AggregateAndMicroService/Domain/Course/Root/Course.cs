@@ -51,7 +51,7 @@ public class Course : Aggregate<CourseId>
         var isStagesValid = ValidateStages(stages);
         if (status.Equals(CourseStatus.Of(Statuses.Active))) throw new Exception("Cannot change course status to active due to stage validation");
         else Status = status;
-        AddDomainEvent(new CourseStatusChangedToArchived(this));
+        AddDomainEvent(new CourseStatusChanged(this));
     }
 
     private static bool ValidateStages(IEnumerable<Stage> stages)

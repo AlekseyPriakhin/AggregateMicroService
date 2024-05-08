@@ -75,6 +75,19 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
         return stageValidation.IsFailure ? throw new Exception(stageValidation.ErrorMessage) : completingToUpdate;
     }
 
+    public void Start(Course.Course course)
+    {
+
+        if (IsCompleted) throw new Exception("Course already completed");
+
+        var firstStage = course.Stages.FirstOrDefault();
+        if (firstStage is null) throw new Exception("Course has no stages");
+
+        var stageCompleting = StageCourseCompleting.Create(Id.Value, firstStage.Id.Value);
+
+        AddDomainEvent(new CourseStartedDomainEvent(this, stageCompleting));
+    }
+
     public void CountNewStage(StageId stageId)
     {
         StagesCountData = StagesCountData.Of(StagesCountData.TotalStages, StagesCountData.CompletedStages + 1);
@@ -140,4 +153,11 @@ public record UpdateStageParams : UpdateParams
 {
     public StageId StageId { get; init; }
     public StageProgress StageProgress { get; init; }
+}
+
+
+public record StartCourseParams
+{
+    public Course.Course Course { get; init; }
+
 }

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using static AggregateAndMicroService.Application.Mappers.CourseMapper;
 using static AggregateAndMicroService.Application.DTO.Response.ResponseBuilder;
 using static AggregateAndMicroService.Application.DTO.Response.PaginationService;
+using AggregateAndMicroService.Application.Mappers;
 
 namespace AggregateAndMicroService.Application.Routes;
 
@@ -14,6 +15,8 @@ public static class GetMapper
 {
     public static WebApplication MapGetRoutes(this WebApplication app)
     {
+        var tags = new[] { "course" };
+
         app.MapGet("api/v1/courses", async ([FromServices] LearningContext context, CancellationToken token, [FromQuery] int page = 1, [FromQuery] int perPage = 10) =>
         {
             var query = context.Courses;
@@ -30,6 +33,7 @@ public static class GetMapper
             return Results.Ok(response);
         })
         .WithName("GetCourses")
+        .WithTags(tags)
         .WithOpenApi();
 
         app.MapGet("api/v1/courses/{courseId}", async ([FromServices] LearningContext context, [FromRoute] string courseId, CancellationToken token) =>
@@ -44,9 +48,32 @@ public static class GetMapper
             return Results.Ok(CreateResponse(ToCourseResponseDto(course)));
         })
         .WithName("GetCourse")
+        .WithTags(tags)
         .WithOpenApi();
 
+
+        app.MapGetUserRoutes();
         return app;
 
+    }
+
+    private static WebApplication MapGetUserRoutes(this WebApplication app)
+    {
+        app.MapGet("api/v1/users", async ([FromServices] LearningContext context, CancellationToken token, [FromQuery] int page = 1, [FromQuery] int perPage = 10) =>
+        {
+
+            var query = context.Users.AsQueryable();
+            var users = query.Skip((page - 1) * perPage)
+                                    .Take(perPage)
+                                    .AsNoTracking()
+                                    .Select(e => UserMapper.ToUserResponseDto(e))
+                                    .ToList();
+
+
+            var totalCount = await query.CountAsync(token);
+            return Results.Ok(CreateResponse(users, GetPagination(users, page, perPage, totalCount)));
+        }).WithTags(["user"]);
+
+        return app;
     }
 }

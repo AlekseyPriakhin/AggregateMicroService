@@ -15,6 +15,7 @@ public static class PutMapper
 {
     public static WebApplication MapPutRoutes(this WebApplication app)
     {
+        var tags = new[] { "course" };
         app.MapPut("api/v1/courses/{courseId}/status", async ([FromServices] LearningContext context,
                     [FromRoute] string courseId,
                     [FromBody] UpdateCourseStatusDTO dto,
@@ -35,7 +36,7 @@ public static class PutMapper
 
             return Results.Ok(CreateResponse(CourseMapper.ToCourseResponseDto(course)));
 
-        });
+        }).WithTags(tags);
         return app;
     }
 }

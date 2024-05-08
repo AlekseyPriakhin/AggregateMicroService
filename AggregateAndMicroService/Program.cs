@@ -1,13 +1,8 @@
 using System.Text.Json.Serialization;
 
-using AggregateAndMicroService.Application.Mappers;
 using AggregateAndMicroService.Application.Routes;
-using AggregateAndMicroService.Domain.Course;
 using AggregateAndMicroService.Infrastructure;
 
-using MediatR;
-
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,7 +37,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.MapGetRoutes()
-    .MapPutRoutes();
+    .MapPutRoutes()
+    .MapPostRoutes();
 
 app.Seed();
 app.Run();
