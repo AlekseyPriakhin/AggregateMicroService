@@ -1,3 +1,0 @@
-{
-  "dbConnectionString": "host=database;port=5432;database=materials;username=postgres;password=12345678"
-}
