@@ -7,6 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5271:8080"
+    volumes:
+      - ./AggregateAndMicroService/config.json.docker:/app/config.json
     restart: on-failure:5
     depends_on:
       - database

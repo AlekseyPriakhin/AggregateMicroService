@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 using AggregateAndMicroService.Common;
 
@@ -61,7 +62,6 @@ public class CourseStatus : ValueObject
         yield return Value;
     }
 }
-
 public class Duration : ValueObject
 {
     public TimeSpan Value { get; }

@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 
+using AggregateAndMicroService.Application.Routes;
 using AggregateAndMicroService.Infrastructure;
 
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ else throw new Exception("Файл конфигурации config.json отсу
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
 
 builder.Services.AddDbContext<LearningContext>(options =>
@@ -35,23 +37,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/materials", async ([FromServices] LearningContext context) =>
-{
-    //var items = await context.Courses.Take(10).ToListAsync();
+app.MapGetRoutes()
+    .MapPutRoutes()
+    .MapPostRoutes();
 
-    //return Results.Ok(items);
-});
-
-app.MapPost("/materials", async (LearningContext context) =>
-{
-
-    await context.SaveChangesAsync();
-})
-
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
-SeedData.Seed(app);
-
+app.Seed();
 app.Run();
 

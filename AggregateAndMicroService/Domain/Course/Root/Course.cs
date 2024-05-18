@@ -6,6 +6,7 @@ using AggregateAndMicroService.Common;
 namespace AggregateAndMicroService.Domain.Course;
 
 
+[ComplexType]
 public class Course : Aggregate<CourseId>
 {
     public StageCount StageCount { get; private set; }
@@ -20,11 +21,11 @@ public class Course : Aggregate<CourseId>
     // navigation properties
     //public virtual ICollection<CourseCompleting> Completings { get; private set; }
 
-    //public virtual ICollection<Stage> Stages { get; private set; }
+    public virtual ICollection<Stage> Stages { get; private set; }
 
-    private Course() { }
+    private Course() : base() { }
 
-    private Course(CourseId id, CourseStatus status, string title, StageCount stageCount, string? description)
+    private Course(CourseId id, CourseStatus status, string title, StageCount stageCount, string? description) : base()
     {
         Id = id;
         Status = status;
@@ -48,7 +49,9 @@ public class Course : Aggregate<CourseId>
     public void UpdateStatus(CourseStatus status, IEnumerable<Stage> stages)
     {
         var isStagesValid = ValidateStages(stages);
-        Status = isStagesValid ? status : CourseStatus.Of(Statuses.Draft);
+        if (status.Equals(CourseStatus.Of(Statuses.Active))) throw new Exception("Cannot change course status to active due to stage validation");
+        else Status = status;
+        AddDomainEvent(new CourseStatusChanged(this));
     }
 
     private static bool ValidateStages(IEnumerable<Stage> stages)

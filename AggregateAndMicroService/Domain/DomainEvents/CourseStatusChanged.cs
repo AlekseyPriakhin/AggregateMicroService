@@ -2,11 +2,11 @@ using AggregateAndMicroService.Domain.Course;
 
 using MediatR;
 
-public record CourseStatusChangedToArchived : INotification
+public record CourseStatusChanged : INotification
 {
     public Course Course { get; init; }
 
-    public CourseStatusChangedToArchived(Course course)
+    public CourseStatusChanged(Course course)
     {
         Course = course;
     }
