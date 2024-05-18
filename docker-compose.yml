@@ -22,5 +22,15 @@ services:
       - 5432:5432
     volumes:
       - db_data:/var/lib/postgresql/data
+
+  kafka_consumer:
+    container_name: kafka_consumer
+    build:
+      context: ./KafkaConsumer
+      dockerfile: Dockerfile
+    restart: on-failure:5
+    depends_on:
+      - database
+      - app
 volumes:
   db_data:

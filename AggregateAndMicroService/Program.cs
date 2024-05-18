@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 
 using AggregateAndMicroService.Infrastructure;
 
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,7 +35,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/materials", async (LearningContext context) =>
+app.MapGet("/materials", async ([FromServices] LearningContext context) =>
 {
     //var items = await context.Courses.Take(10).ToListAsync();
 
