@@ -8,8 +8,15 @@ using static AggregateAndMicroService.Application.Mappers.CourseMapper;
 using static AggregateAndMicroService.Application.DTO.Response.ResponseBuilder;
 using static AggregateAndMicroService.Application.DTO.Response.PaginationService;
 using AggregateAndMicroService.Application.Mappers;
+using AggregateAndMicroService.Infrastructure.Kafka;
+using System.Text.Json;
 
 namespace AggregateAndMicroService.Application.Routes;
+
+public class TestMessage
+{
+    public string Value { get; set; }
+}
 
 public static class GetMapper
 {

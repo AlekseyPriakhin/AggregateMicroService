@@ -1,12 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Text.Json;
+
 using Confluent.Kafka;
 
 Console.WriteLine("Hello, World!");
 
 
-/* var config = new ConsumerConfig
+
+var config = new ConsumerConfig
 {
-    BootstrapServers = "localhost:9092",
+    BootstrapServers = "broker:9092",
     GroupId = "test-consumer-group",
     AutoOffsetReset = AutoOffsetReset.Earliest
 };
@@ -15,12 +18,40 @@ Console.WriteLine("Hello, World!");
 
 using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
 {
-    consumer.Subscribe(["test", "one-more-test"]);
+    consumer.Subscribe("course");
     while (true)
     {
         var message = consumer.Consume();
-        System.Console.WriteLine(message.Message.Value);
+        var deserializedMessage = new Object();
+
+        switch (message.Topic)
+        {
+            case "course":
+                {
+                    deserializedMessage = JsonSerializer.Deserialize<CourseStatusChangeIntegrationEvent>(message.Message.Value);
+                    break;
+                }
+
+            default: break;
+        }
+
+        System.Console.WriteLine(deserializedMessage);
 
     }
 
-} */
+}
+
+public class CourseStatusChangeIntegrationEvent
+{
+    public required string Id { get; init; }
+    public required string Title { get; init; }
+    public required string Status { get; init; }
+    public required int StagesCount { get; init; }
+    public string? Description { get; init; }
+
+    public override string ToString()
+    {
+        return JsonSerializer.Serialize(this);
+    }
+    //public List<StageResponseDto> Stages { get; init; } = [];
+}

@@ -2,8 +2,8 @@ using System.Text.Json.Serialization;
 
 using AggregateAndMicroService.Application.Routes;
 using AggregateAndMicroService.Infrastructure;
+using AggregateAndMicroService.Infrastructure.Kafka;
 
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +18,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureHttpJsonOptions(options => options.SerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+builder.Services.AddSingleton<KafkaService>();
 
 
 builder.Services.AddDbContext<LearningContext>(options =>

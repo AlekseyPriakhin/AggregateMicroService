@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AggregateAndMicroService", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KafkaConsumer", "KafkaConsumer\KafkaConsumer.csproj", "{526B6417-EF09-489E-A633-9EDD6D6B7641}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationEvents", "IntegrationEvents\IntegrationEvents.csproj", "{9B8C8C70-24DC-4CD7-A3BE-9FF0B2D9BF5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{526B6417-EF09-489E-A633-9EDD6D6B7641}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{526B6417-EF09-489E-A633-9EDD6D6B7641}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{526B6417-EF09-489E-A633-9EDD6D6B7641}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B8C8C70-24DC-4CD7-A3BE-9FF0B2D9BF5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B8C8C70-24DC-4CD7-A3BE-9FF0B2D9BF5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B8C8C70-24DC-4CD7-A3BE-9FF0B2D9BF5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B8C8C70-24DC-4CD7-A3BE-9FF0B2D9BF5F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

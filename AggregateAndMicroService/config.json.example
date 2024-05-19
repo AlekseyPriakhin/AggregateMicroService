@@ -1,5 +1,6 @@
 {
-  "dbConnectionString": "host=localhost;port=5432;database=modelstore;username=postgres;password=12345678"
+  "dbConnectionString": "host=localhost;port=5432;database=modelstore;username=postgres;password=12345678",
+  "broker": "broker:9092"
 }
 
 // Docker 
