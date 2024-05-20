@@ -49,7 +49,7 @@ public class Course : Aggregate<CourseId>
     public void UpdateStatus(CourseStatus status, IEnumerable<Stage> stages)
     {
         var isStagesValid = ValidateStages(stages);
-        if (status.Equals(CourseStatus.Of(Statuses.Active))) throw new Exception("Cannot change course status to active due to stage validation");
+        if (!isStagesValid) throw new Exception("Cannot change course status to active due to stage validation");
         else Status = status;
         AddDomainEvent(new CourseStatusChanged(this));
     }
@@ -61,9 +61,10 @@ public class Course : Aggregate<CourseId>
             return false;
         }
 
-        var stack = new Stack<Stage>(stages);
+        var orderedStages = stages.OrderBy(e => e.Order).ToList();
+        var stack = new Stack<Stage>();
 
-        foreach (var stage in stages)
+        foreach (var stage in orderedStages)
         {
             if (Stage.REQUIRED_STAGES.Contains(stage.Type)) stack.Clear();
             else stack.Push(stage);

@@ -5,13 +5,10 @@ using MediatR;
 namespace AggregateAndMicroService.Application.IntegrationEvents;
 
 
-public record CourseStatusChangeIntegrationEventHandler : INotificationHandler<CourseStatusChangeIntegrationEvent>
+public class CourseStatusChangeIntegrationEventHandler : BaseIntegrationEventHandler, INotificationHandler<CourseStatusChangeIntegrationEvent>
 {
-    private readonly KafkaService _broker;
-
-    public CourseStatusChangeIntegrationEventHandler(KafkaService broker)
+    public CourseStatusChangeIntegrationEventHandler(KafkaService broker) : base(broker)
     {
-        _broker = broker;
     }
 
     public async Task Handle(CourseStatusChangeIntegrationEvent notification, CancellationToken cancellationToken)

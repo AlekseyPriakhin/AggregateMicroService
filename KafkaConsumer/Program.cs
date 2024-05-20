@@ -3,55 +3,53 @@ using System.Text.Json;
 
 using Confluent.Kafka;
 
-Console.WriteLine("Hello, World!");
+using Newtonsoft.Json.Linq;
 
 
 
+
+var address = Environment.GetEnvironmentVariable("BROKER_URL") ?? "localhost:19092";
+
+System.Console.WriteLine(address);
+
+Console.WriteLine("Broker Consumer Started" + '\n');
 var config = new ConsumerConfig
 {
-    BootstrapServers = "broker:9092",
+    BootstrapServers = address, //localhost:19092 || broker:9092
     GroupId = "test-consumer-group",
     AutoOffsetReset = AutoOffsetReset.Earliest
 };
 
 
 
-using (var consumer = new ConsumerBuilder<Ignore, string>(config).Build())
+using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
 {
-    consumer.Subscribe("course");
+    consumer.Subscribe(["course", "course_completing", "stage_completing"]);
+
     while (true)
     {
-        var message = consumer.Consume();
-        var deserializedMessage = new Object();
-
-        switch (message.Topic)
+        try
         {
-            case "course":
+            var message = consumer.Consume();
+            var deserializedMessage = JObject.Parse(message.Message.Value);
+            if (deserializedMessage is not null)
+            {
+                System.Console.WriteLine($"MESSAGE: Topic - {message.Topic}");
+                foreach (var pair in deserializedMessage)
                 {
-                    deserializedMessage = JsonSerializer.Deserialize<CourseStatusChangeIntegrationEvent>(message.Message.Value);
-                    break;
+                    System.Console.WriteLine($"{pair.Key}: {pair.Value}");
                 }
+                System.Console.WriteLine('\n');
+            }
 
-            default: break;
+
+        }
+        catch (System.Exception err)
+        {
+            System.Console.WriteLine($"ERROR: {err}");
+            Thread.Sleep(30000);
         }
 
-        System.Console.WriteLine(deserializedMessage);
-
     }
 
-}
-
-public class CourseStatusChangeIntegrationEvent
-{
-    public required string Id { get; init; }
-    public required string Title { get; init; }
-    public required string Status { get; init; }
-    public required int StagesCount { get; init; }
-    public string? Description { get; init; }
-
-    public override string ToString()
-    {
-        return JsonSerializer.Serialize(this);
-    }
-    //public List<StageResponseDto> Stages { get; init; } = [];
 }

@@ -3,12 +3,12 @@ using AggregateAndMicroService.Domain.Course;
 
 namespace AggregateAndMicroService.Domain.CourseProgress;
 
-public class StageCourseCompleting
+public class StageCourseCompleting : Entity<StageCourseCompletingId>
 {
 
     #region Props
 
-    public Guid CourseCompletingId { get; private set; }
+    public CourseCompletingId CourseCompletingId { get; private set; }
 
     public Guid StageId { get; private set; }
 
@@ -18,7 +18,8 @@ public class StageCourseCompleting
 
     #region Navigation Props
 
-    /* public virtual CourseCompleting CourseCompleting { get; private set; }
+    public virtual CourseCompleting CourseCompleting { get; private set; }
+    /* 
     public virtual Stage Stage { get; private set; } */
 
     #endregion
@@ -29,7 +30,8 @@ public class StageCourseCompleting
     private StageCourseCompleting(Guid completingId, Guid stageId)
     {
 
-        CourseCompletingId = completingId;
+        Id = StageCourseCompletingId.Of(Guid.NewGuid());
+        CourseCompletingId = CourseCompletingId.Of(completingId);
         StageId = stageId;
         StageProgress = StageProgress.Of(0);
     }

@@ -15,9 +15,7 @@ public static class SeedData
         {
             var courseId = Guid.NewGuid();
             InitStages(context, courseId);
-
-            var user = User.Create("user1");
-            context.Users.Add(user);
+            InitUsers(context);
 
             var stages = context.ChangeTracker.Entries<Stage>().Select(e => e.Entity).ToList();
             var courseDto = new CourseDTO("Course 1", "Description", courseId);
@@ -29,18 +27,26 @@ public static class SeedData
         return app;
     }
 
+    private static void InitUsers(LearningContext context)
+    {
+        List<string> userNames = ["Alex", "Alice", "Alexander"];
+        context.Users.AddRange(userNames.Select(User.Create));
+    }
+
     private static void InitStages(LearningContext context, Guid courseId)
     {
         var document = Stage.Create(StageId.Of(Guid.NewGuid()),
                                     "Document 1", StageType.Of(StageTypes.Document),
                                     StageDuration.Of(TimeSpan.Zero),
-                                    courseId);
+                                    courseId,
+                                    0);
 
         var test = Stage.Create(StageId.Of(Guid.NewGuid()),
                                           "Test",
                                           StageType.Of(StageTypes.Test),
                                           StageDuration.Of(TimeSpan.FromHours(2)),
                                           courseId,
+                                          1,
                                           document.Id.Value);
         context.Stages.AddRange([document, test]);
     }

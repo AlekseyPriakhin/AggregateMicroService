@@ -11,15 +11,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace AggregateAndMicroService.Application.Routes;
 
-public static class PostMapper
+public static class DeleteMapper
 {
 
-    public static WebApplication MapPostRoutes(this WebApplication app)
+    public static WebApplication MapDeleteRoutes(this WebApplication app)
     {
-        var tags = new[] { "course" };
-        app.MapPost("api/v1/courses/{courseId}/start", async ([FromServices] LearningContext context,
+        var tags = new[] { "course_progress" };
+        app.MapPost("api/v1/courses/{courseId}/exclude/{userId}", async ([FromServices] LearningContext context,
         [FromServices] IMediator mediator,
         [FromRoute] string courseId,
+        [FromRoute] string userId,
         [FromBody] StartCourseDTO dto) =>
         {
             var id = CourseId.Of(Guid.Parse(courseId));
@@ -42,7 +43,6 @@ public static class PostMapper
 
             return Results.Created();
         }).WithTags(tags);
-
 
         return app;
     }

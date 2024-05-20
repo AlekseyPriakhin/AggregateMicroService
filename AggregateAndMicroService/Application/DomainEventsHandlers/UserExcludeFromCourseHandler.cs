@@ -24,7 +24,7 @@ public class UserExcludeFromCourseHandler : INotificationHandler<UserExcludeFrom
         else user.UpdateCompletedCourseCount(false);
 
         var res = await _learningContext.StageCourseCompletings
-                        .Where(e => e.CourseCompletingId == notification.CourseCompleting.Id.Value)
+                        .Where(e => e.CourseCompletingId.Value == notification.CourseCompleting.Id.Value)
                         .ExecuteDeleteAsync();
 
         await _learningContext.CourseCompleting

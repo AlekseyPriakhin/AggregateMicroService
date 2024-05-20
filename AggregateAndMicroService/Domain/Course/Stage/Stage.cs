@@ -24,6 +24,8 @@ public class Stage : Aggregate<StageId>
 
     public CourseId CourseId { get; private set; }
 
+    public int Order { get; private set; }
+
     public Guid? Previous { get; private set; }
 
     [NotMapped]
@@ -36,7 +38,7 @@ public class Stage : Aggregate<StageId>
     /* public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; } */
 
 
-    public static Stage Create(StageId id, string title, StageType type, StageDuration duration, Guid courseId, Guid? previous = null)
+    public static Stage Create(StageId id, string title, StageType type, StageDuration duration, Guid courseId, int order, Guid? previous = null)
     {
         return new Stage
         {
@@ -45,6 +47,7 @@ public class Stage : Aggregate<StageId>
             Type = type,
             Duration = duration,
             CourseId = CourseId.Of(courseId),
+            Order = order,
             Previous = previous
         };
     }

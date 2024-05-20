@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AggregateAndMicroService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AggregateAndMicroService.Migrations
 {
     [DbContext(typeof(LearningContext))]
-    partial class LearningContextModelSnapshot : ModelSnapshot
+    [Migration("20240520082313_addOrderToStage")]
+    partial class addOrderToStage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,14 +170,8 @@ namespace AggregateAndMicroService.Migrations
 
             modelBuilder.Entity("AggregateAndMicroService.Domain.CourseProgress.StageCourseCompleting", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
                     b.Property<Guid>("CourseCompletingId")
                         .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("boolean");
 
                     b.Property<Guid>("StageId")
                         .HasColumnType("uuid");
@@ -190,9 +187,7 @@ namespace AggregateAndMicroService.Migrations
                                 .HasColumnName("StageProgress");
                         });
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseCompletingId");
+                    b.HasKey("CourseCompletingId", "StageId");
 
                     b.ToTable("StageCourseCompletings");
                 });
@@ -231,25 +226,9 @@ namespace AggregateAndMicroService.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("AggregateAndMicroService.Domain.CourseProgress.StageCourseCompleting", b =>
-                {
-                    b.HasOne("AggregateAndMicroService.Domain.CourseProgress.CourseCompleting", "CourseCompleting")
-                        .WithMany("StageCourseCompletings")
-                        .HasForeignKey("CourseCompletingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CourseCompleting");
-                });
-
             modelBuilder.Entity("AggregateAndMicroService.Domain.Course.Course", b =>
                 {
                     b.Navigation("Stages");
-                });
-
-            modelBuilder.Entity("AggregateAndMicroService.Domain.CourseProgress.CourseCompleting", b =>
-                {
-                    b.Navigation("StageCourseCompletings");
                 });
 #pragma warning restore 612, 618
         }

@@ -25,11 +25,12 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
 
     // Navigation properties
+    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; }
     /* public virtual User.User User { get; private set; }
 
     public virtual Course Course { get; private set; }
 
-    public virtual ICollection<StageCourseCompleting> StageCourseCompletings { get; private set; } */
+     */
 
     //Methods
 
@@ -77,7 +78,6 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     public void Start(Course.Course course)
     {
-
         if (IsCompleted) throw new Exception("Course already completed");
 
         var firstStage = course.Stages.FirstOrDefault();
