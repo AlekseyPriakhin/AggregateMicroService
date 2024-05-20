@@ -28,6 +28,15 @@ public static class PostMapper
                                                 .FirstOrDefaultAsync();
             if (course is null) return Results.NotFound($"Курс с таким Id - {courseId} не существует");
 
+            var maybeStartedCourse = context.CourseCompleting.Where(e => e.CourseId.ToString() == courseId
+                                                                             && e.UserId.ToString() == dto.UserId)
+                                                                                        .FirstOrDefault();
+
+            if (maybeStartedCourse is not null)
+            {
+                return Results.Ok(maybeStartedCourse);
+            }
+
             var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), UserId.Of(Guid.Parse(dto.UserId)), id);
 
             courseCompleting.Start(course);

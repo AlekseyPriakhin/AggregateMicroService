@@ -78,6 +78,7 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     public void Start(Course.Course course)
     {
+        //if (!course.IsActive) throw new Exception("Нельзя начать неактивный курс");
         if (IsCompleted) throw new Exception("Course already completed");
 
         var firstStage = course.Stages.FirstOrDefault();
