@@ -53,3 +53,11 @@ using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
     }
 
 }
+
+
+public class BrokerMessage
+{
+    string Id { get; set; }
+
+    string Data { get; set; }
+}

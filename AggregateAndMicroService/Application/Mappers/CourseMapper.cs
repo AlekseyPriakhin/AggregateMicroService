@@ -1,4 +1,5 @@
 using AggregateAndMicroService.Application.DTO.Response;
+using AggregateAndMicroService.Application.IntegrationEvents;
 using AggregateAndMicroService.Domain.Course;
 
 namespace AggregateAndMicroService.Application.Mappers;

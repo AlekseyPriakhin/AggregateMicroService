@@ -31,21 +31,27 @@ public class CourseStartedDomainEventHandler : INotificationHandler<CourseStarte
 
         var courseStartedEvent = new CourseStartedIntegrationEvent
         {
-            Id = notification.CourseCompleting.Id.Value.ToString(),
-            CourseId = notification.CourseCompleting.CourseId.ToString(),
-            UserId = notification.CourseCompleting.UserId.ToString(),
-            Status = notification.CourseCompleting.Status.Value.ToString(),
-            Progress = notification.CourseCompleting.Progress.Value,
-            StagesCountData = notification.CourseCompleting.Progress.Value
+            Data = new CourseCompletingIntegrationEventDto
+            {
+                Id = notification.CourseCompleting.Id.Value.ToString(),
+                CourseId = notification.CourseCompleting.CourseId.ToString(),
+                UserId = notification.CourseCompleting.UserId.ToString(),
+                Status = notification.CourseCompleting.Status.Value.ToString(),
+                Progress = notification.CourseCompleting.Progress.Value,
+                StagesCountData = notification.CourseCompleting.Progress.Value
+            }
         };
         await _mediator.Publish(courseStartedEvent, cancellationToken);
 
         var stageStartedEvent = new StageStartedIntegrationEvent
         {
-            Id = notification.FirstStageCompleting.Id.Value.ToString(),
-            CourseCompletingId = notification.FirstStageCompleting.CourseCompletingId.Value.ToString(),
-            UserId = notification.CourseCompleting.UserId.ToString(),
-            Progress = notification.FirstStageCompleting.StageProgress.Value
+            Data = new StageCompletingIntegrationDto
+            {
+                Id = notification.FirstStageCompleting.Id.Value.ToString(),
+                CourseCompletingId = notification.FirstStageCompleting.CourseCompletingId.Value.ToString(),
+                UserId = notification.CourseCompleting.UserId.ToString(),
+                Progress = notification.FirstStageCompleting.StageProgress.Value
+            }
         };
         await _mediator.Publish(stageStartedEvent, cancellationToken);
 

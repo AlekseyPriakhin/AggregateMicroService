@@ -10,5 +10,5 @@ public record CourseResponseDto
     public required Statuses Status { get; init; }
     public required int StagesCount { get; init; }
     public string? Description { get; init; }
-    public List<StageResponseDto> Stages { get; init; } = [];
+    public List<StageResponseDto>? Stages { get; init; } = [];
 }
