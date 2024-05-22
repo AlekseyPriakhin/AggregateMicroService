@@ -12,6 +12,7 @@ services:
     restart: on-failure:5
     depends_on:
       - database
+      - broker
 
   database:
     container_name: microservice_db
@@ -47,6 +48,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
 
   kafka_consumer:
     container_name: kafka_consumer
@@ -58,6 +60,7 @@ services:
       - ./IntegrationEvents:/IntegrationEvents
     depends_on:
       - broker
+      - app
     environment:
       - BROKER_URL=broker:9092
 volumes:

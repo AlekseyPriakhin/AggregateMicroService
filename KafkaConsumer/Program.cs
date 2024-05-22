@@ -28,36 +28,27 @@ using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
 
     while (true)
     {
-        try
+        var message = consumer.Consume();
+        var brokerMessage = JsonSerializer.Deserialize<BrokerMessage>(message.Message.Value);
+        if (brokerMessage is not null)
         {
-            var message = consumer.Consume();
             var deserializedMessage = JObject.Parse(message.Message.Value);
-            if (deserializedMessage is not null)
+            Console.WriteLine($"MESSAGE: Topic - {message.Topic}");
+            foreach (var pair in deserializedMessage)
             {
-                System.Console.WriteLine($"MESSAGE: Topic - {message.Topic}");
-                foreach (var pair in deserializedMessage)
-                {
-                    System.Console.WriteLine($"{pair.Key}: {pair.Value}");
-                }
-                System.Console.WriteLine('\n');
+                Console.WriteLine($"{pair.Key}: {pair.Value}");
             }
-
-
+            Console.WriteLine('\n');
         }
-        catch (System.Exception err)
-        {
-            System.Console.WriteLine($"ERROR: {err}");
-            Thread.Sleep(30000);
-        }
+
 
     }
-
 }
 
 
 public class BrokerMessage
 {
-    string Id { get; set; }
-
-    string Data { get; set; }
+    public string Id { get; set; }
+    public string Timestamp { get; set; }
+    public object Data { get; set; }
 }

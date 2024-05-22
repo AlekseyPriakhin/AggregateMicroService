@@ -10,15 +10,16 @@ public class KafkaService
     {
         var brokerConfig = new ProducerConfig
         {
-            BootstrapServers = configuration["broker"]
+            BootstrapServers = configuration["broker"],
+            AllowAutoCreateTopics = true,
+
         };
         _producer = new ProducerBuilder<Null, string>(brokerConfig).Build();
     }
 
     public async Task ProduceAsync(string topic, string message)
     {
-        var m = new Message<Null, string> { Value = message };
-        await _producer.ProduceAsync(topic, m);
+        await _producer.ProduceAsync(topic, new Message<Null, string> { Value = message });
     }
 
 }
