@@ -37,7 +37,8 @@ public static class PostMapper
                 return Results.Ok(maybeStartedCourse);
             }
 
-            var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), UserId.Of(Guid.Parse(dto.UserId)), id);
+            var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), UserId.Of(Guid.Parse(dto.UserId)),
+            id, course.StageCount.Value);
 
             courseCompleting.Start(course);
 

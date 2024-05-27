@@ -24,7 +24,7 @@ var config = new ConsumerConfig
 
 using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
 {
-    consumer.Subscribe(["course", "course_completing", "stage_completing"]);
+    consumer.Subscribe(["course"]);
 
     while (true)
     {

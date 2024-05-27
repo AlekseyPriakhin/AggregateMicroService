@@ -6,7 +6,7 @@ public static class IntegrationEventBuilder
     {
         return new IntegrationEvent<U>
         {
-            Data = data
+            /* Data = data */
         };
     }
 }

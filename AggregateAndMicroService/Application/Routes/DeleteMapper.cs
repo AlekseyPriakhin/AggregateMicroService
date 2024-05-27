@@ -29,7 +29,8 @@ public static class DeleteMapper
                                                 .FirstOrDefaultAsync();
             if (course is null) return Results.NotFound($"Курс с таким Id - {courseId} не существует");
 
-            var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), UserId.Of(Guid.Parse(dto.UserId)), id);
+            var courseCompleting = CourseCompleting.Create(CourseCompletingId.Of(Guid.NewGuid()), UserId.Of(Guid.Parse(dto.UserId)), id,
+             course.StageCount.Value);
 
             courseCompleting.Start(course);
 

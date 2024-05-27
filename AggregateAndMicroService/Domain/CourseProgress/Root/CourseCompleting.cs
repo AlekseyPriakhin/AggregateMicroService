@@ -36,7 +36,7 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
 
     private CourseCompleting() { }
 
-    public static CourseCompleting Create(CourseCompletingId guid, Guid userId, Guid courseId)
+    public static CourseCompleting Create(CourseCompletingId guid, Guid userId, Guid courseId, int stagesCount)
     {
 
         return new CourseCompleting
@@ -45,6 +45,7 @@ public class CourseCompleting : Aggregate<CourseCompletingId>
             UserId = userId,
             CourseId = courseId,
             Status = CompleteStatus.Of(CompleteStatuses.InProgress),
+            StagesCountData = StagesCountData.Of(stagesCount, 0),
             Progress = Progress.Of(0),
         };
 
