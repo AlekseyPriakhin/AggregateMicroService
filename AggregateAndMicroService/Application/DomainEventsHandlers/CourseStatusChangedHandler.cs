@@ -22,13 +22,13 @@ public class CourseStatusChangedHandler : INotificationHandler<CourseStatusChang
 
         var integrationEvent = new CourseStatusChangeIntegrationEvent
         {
+            CourseId = notification.Course.Id.Value.ToString(),
+            Status = notification.Course.Status.Value.ToString(),
+            Title = notification.Course.Title,
+            StagesCount = notification.Course.StageCount.Value,
+            //Description = notification.Course.Description,
             /* Data = new CourseIntegrationEventDto
             {
-                Id = notification.Course.Id.Value.ToString(),
-                Status = notification.Course.Status.Value.ToString(),
-                Title = notification.Course.Title,
-                StagesCount = notification.Course.StageCount.Value,
-                Description = notification.Course.Description,
             } */
         };
 

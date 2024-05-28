@@ -16,7 +16,7 @@ Console.WriteLine("Broker Consumer Started" + '\n');
 var config = new ConsumerConfig
 {
     BootstrapServers = address, //localhost:19092 || broker:9092
-    GroupId = "test-consumer-group",
+    GroupId = "consumer-group-1",
     AutoOffsetReset = AutoOffsetReset.Earliest
 };
 
@@ -29,8 +29,8 @@ using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
     while (true)
     {
         var message = consumer.Consume();
-        var brokerMessage = JsonSerializer.Deserialize<BrokerMessage>(message.Message.Value);
-        if (brokerMessage is not null)
+        //var brokerMessage = JsonSerializer.Deserialize<BrokerMessage>(message.Message.Value);
+        if (message.Message.Value is not null)
         {
             var deserializedMessage = JObject.Parse(message.Message.Value);
             Console.WriteLine($"MESSAGE: Topic - {message.Topic}");
@@ -48,7 +48,7 @@ using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
 
 public class BrokerMessage
 {
-    public string Id { get; set; }
-    public string Timestamp { get; set; }
-    public object Data { get; set; }
+    public Guid Id { get; set; }
+    public long Timestamp { get; set; }
+    // public object Data { get; set; }
 }

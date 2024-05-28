@@ -1,4 +1,4 @@
-clickhouse-client --query "CREATE TABLE course_status_changed_queue (id UUID, title String, status String, stagesCount String, timestamp String) ENGINE = Kafka('broker:9092', 'course', 'consumer-group-2', 'JSONEachRow') SETTINGS kafka_commit_on_select = 1, stream_like_engine_allow_direct_select=1;"
+clickhouse-client --query "CREATE TABLE queue (id UUID, title String, status String, stagesCount String, timestamp String) ENGINE = Kafka('broker:9092', 'course', 'consumer-group-2', 'JSONEachRow') SETTINGS kafka_commit_on_select = 1, stream_like_engine_allow_direct_select=1;"
 
 
 clickhouse-client --query "CREATE TABLE daily (day Date, total UInt64) ENGINE = SummingMergeTree() ORDER BY (day);"
