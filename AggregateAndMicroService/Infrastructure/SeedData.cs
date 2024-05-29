@@ -13,14 +13,20 @@ public static class SeedData
 
         if (!context.Courses.Any())
         {
-            var courseId = Guid.NewGuid();
-            InitStages(context, courseId);
             InitUsers(context);
+            for (int i = 1; i <= 5; i++)
+            {
+                var courseId = Guid.NewGuid();
+                InitStages(context, courseId);
+                var stages = context.ChangeTracker.Entries<Stage>()
+                                                .Where(e => e.Entity.CourseId == courseId)
+                                                .Select(e => e.Entity)
+                                                .ToList();
+                var courseDto = new CourseDTO($"Course {i}", "Description", courseId);
+                var course = Course.Create(courseDto, stages);
+                context.Courses.Add(course);
+            }
 
-            var stages = context.ChangeTracker.Entries<Stage>().Select(e => e.Entity).ToList();
-            var courseDto = new CourseDTO("Course 1", "Description", courseId);
-            var course = Course.Create(courseDto, stages);
-            context.Courses.Add(course);
             context.SaveChanges();
         }
 

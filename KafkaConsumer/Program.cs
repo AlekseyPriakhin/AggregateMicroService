@@ -29,6 +29,8 @@ using (var consumer = new ConsumerBuilder<Null, string>(config).Build())
     while (true)
     {
         var message = consumer.Consume();
+        System.Console.WriteLine("Consumed message: " + message.Message.Value);
+        System.Console.WriteLine('\n');
         //var brokerMessage = JsonSerializer.Deserialize<BrokerMessage>(message.Message.Value);
         if (message.Message.Value is not null)
         {

@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using Confluent.Kafka;
 
 namespace AggregateAndMicroService.Infrastructure.Kafka;
@@ -20,6 +22,15 @@ public class KafkaService
     public async Task ProduceAsync(string topic, string message)
     {
         await _producer.ProduceAsync(topic, new Message<Null, string> { Value = message });
+    }
+
+    public async Task ProduceAsync(string topic, object message)
+    {
+        var json = JsonSerializer.Serialize(message, new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
+        await _producer.ProduceAsync(topic, new Message<Null, string> { Value = json });
     }
 
 }

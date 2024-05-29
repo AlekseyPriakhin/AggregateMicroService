@@ -13,8 +13,8 @@ public class CourseStatusChangeIntegrationEventHandler : BaseIntegrationEventHan
 
     public async Task Handle(CourseStatusChangeIntegrationEvent notification, CancellationToken cancellationToken)
     {
-        var message = System.Text.Json.JsonSerializer.Serialize(notification);
-        await _broker.ProduceAsync("course", message);
+        //var message = System.Text.Json.JsonSerializer.Serialize(notification);
+        await _broker.ProduceAsync("course", notification);
     }
 
 }
