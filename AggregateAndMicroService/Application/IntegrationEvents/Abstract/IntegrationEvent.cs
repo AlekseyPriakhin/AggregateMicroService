@@ -9,6 +9,6 @@ public record IntegrationEvent<T>
     public IntegrationEvent()
     {
         Id = Guid.NewGuid();
-        Timestamp = DateTime.Now.ToFileTimeUtc().ToString();
+        Timestamp = ((DateTimeOffset)DateTime.Now).ToUnixTimeSeconds().ToString();
     }
 }
