@@ -49,8 +49,8 @@ public class LearningContext : DbContext
 
     public async Task SaveEntitiesAsync()
     {
-        await _mediator.DispatchDomainEventsAsync(this);
         await base.SaveChangesAsync();
+        await _mediator.DispatchDomainEventsAsync(this);
     }
 
 
